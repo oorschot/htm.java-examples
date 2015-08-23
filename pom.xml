@@ -4,7 +4,7 @@
 
 	<groupId>org.numenta</groupId>
 	<artifactId>htm.java-examples</artifactId>
-	<version>0.5.5</version>
+	<version>0.6.0</version>
 	<name>htm.java</name>
 	<description>Example Applications for the Java version of Numenta's HTM technology</description>
 
