@@ -6,7 +6,9 @@ htm.java-examples
 
 This is the landing page for demos, and example code written for [htm.java](https://github.com/numenta/htm.java).
 
-htm.java is the official Java port of the Numenta Platform for Intelligent Computing [(NuPIC)](https://github.com/numenta/nupic). It is totally community driven (by people like yourself), and thrives due to the efforts of those willing to donate their free time to supporting what they feel is an important technology.
+**htm.java** is the official Java port of the Numenta Platform for Intelligent Computing [(NuPIC)](https://github.com/numenta/nupic). It is totally community driven (by people like yourself), and thrives due to the efforts of those willing to donate their free time to supporting what they feel is an important technology.
+
+_Demo files and example programs can be downloaded from their respective directories here, for now they are not on a maven central repo as is htm.java._
 
 You can come have a chat with everybody here:
 [![Gitter](https://img.shields.io/badge/gitter-join_chat-blue.svg?style=flat)](https://gitter.im/numenta/public?utm_source=badge)
