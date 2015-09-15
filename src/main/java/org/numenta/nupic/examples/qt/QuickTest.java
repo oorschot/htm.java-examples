@@ -36,27 +36,27 @@ import org.numenta.nupic.algorithms.CLAClassifier;
 //import org.numenta.nupic.algorithms.ClassifierResult;
 import org.numenta.nupic.encoders.ScalarEncoder;
 import org.numenta.nupic.model.Cell;
-import org.numenta.nupic.research.ComputeCycle;
-import org.numenta.nupic.research.SpatialPooler;
-import org.numenta.nupic.research.TemporalMemory;
+import org.numenta.nupic.ComputeCycle;
+import org.numenta.nupic.algorithms.SpatialPooler;
+import org.numenta.nupic.algorithms.TemporalMemory;
 import org.numenta.nupic.util.ArrayUtils;
 /**
  * Quick and dirty example of tying together a network of components.
  * This should hold off peeps until the Network API is complete.
  * (see: https://github.com/numenta/htm.java/wiki/Roadmap)
- * 
+ *
  * <p>Warning: Sloppy sketchpad code, but it works!</p>
- * 
+ *
  * <p><em><b>
- * To see the pretty printed test output and Classification results, 
- * 
+ * To see the pretty printed test output and Classification results,
+ *
  * UNCOMMENT ALL FUNCTIONAL (NON-LABEL) LINES BELOW!
- * 
+ *
  * These are commented to avoid running during command line builds and
  * the ugly yellow "unused" markers that Eclipse puts on unused lines.
- * 
+ *
  * </b></em></p>
- * 
+ *
  * @author PDove
  * @author cogmission
  */
@@ -69,10 +69,10 @@ public class QuickTest {
     public static void main(String[] args) {
         Parameters params = getParameters();
         System.out.println(params);
-        
+
         // Toggle this to switch between resetting on every week start day
         isResetting = true;
-        
+
         //Layer components
         ScalarEncoder.Builder dayBuilder =
             ScalarEncoder.builder()
@@ -88,24 +88,24 @@ public class QuickTest {
         SpatialPooler sp = new SpatialPooler();
         TemporalMemory tm = new TemporalMemory();
         CLAClassifier classifier = new CLAClassifier(new TIntArrayList(new int[] { 1 }), 0.1, 0.3, 0);
-        
+
         Layer<Double> layer = getLayer(params, encoder, sp, tm, classifier);
-        
+
         for(double i = 0, x = 0;x < 10000;i = (i == 6 ? 0 : i + 1), x++) {  // USE "X" here to control run length
             if (i == 0 && isResetting) tm.reset(layer.getMemory());
-            
+
             // For 3rd argument: Use "i" for record num if re-cycling records (isResetting == true) - otherwise use "x" (the sequence number)
             runThroughLayer(layer, i + 1, isResetting ? (int)i : (int)x, (int)x);
         }
-        
+
     }
-    
+
     public static Parameters getParameters() {
         Parameters parameters = Parameters.getAllDefaultParameters();
         parameters.setParameterByKey(KEY.INPUT_DIMENSIONS, new int[] { 8 });
         parameters.setParameterByKey(KEY.COLUMN_DIMENSIONS, new int[] { 20 });
         parameters.setParameterByKey(KEY.CELLS_PER_COLUMN, 6);
-        
+
         //SpatialPooler specific
         parameters.setParameterByKey(KEY.POTENTIAL_RADIUS, 12);//3
         parameters.setParameterByKey(KEY.POTENTIAL_PCT, 0.5);//0.5
@@ -123,7 +123,7 @@ public class QuickTest {
         parameters.setParameterByKey(KEY.MAX_BOOST, 10.0);
         parameters.setParameterByKey(KEY.SEED, 42);
         parameters.setParameterByKey(KEY.SP_VERBOSITY, 0);
-        
+
         //Temporal Memory specific
         parameters.setParameterByKey(KEY.INITIAL_PERMANENCE, 0.2);
         parameters.setParameterByKey(KEY.CONNECTED_PERMANENCE, 0.8);
@@ -132,74 +132,74 @@ public class QuickTest {
         parameters.setParameterByKey(KEY.PERMANENCE_INCREMENT, 0.05);
         parameters.setParameterByKey(KEY.PERMANENCE_DECREMENT, 0.05);
         parameters.setParameterByKey(KEY.ACTIVATION_THRESHOLD, 4);
-        
+
         return parameters;
     }
 
     public static <T> void runThroughLayer(Layer<T> l, T input, int recordNum, int sequenceNum) {
         l.input(input, recordNum, sequenceNum);
     }
-    
+
     public static Layer<Double> getLayer(Parameters p, ScalarEncoder e, SpatialPooler s, TemporalMemory t, CLAClassifier c) {
         Layer<Double> l = new LayerImpl(p, e, s, t, c);
         return l;
     }
-    
+
     ////////////////// Preliminary Network API Toy ///////////////////
-    
+
     interface Layer<T> {
         public void input(T value, int recordNum, int iteration);
         public int[] getPredicted();
         public Connections getMemory();
         public int[] getActual();
     }
-    
+
     /**
      * I'm going to make an actual Layer, this is just temporary so I can
      * work out the details while I'm completing this for Peter
-     * 
+     *
      * @author David Ray
      *
      */
     static class LayerImpl implements Layer<Double> {
         private Parameters params;
-        
+
         private Connections memory = new Connections();
-        
+
         private ScalarEncoder encoder;
         private SpatialPooler spatialPooler;
         private TemporalMemory temporalMemory;
 //      private CLAClassifier classifier;
         private Map<String, Object> classification = new LinkedHashMap<String, Object>();
-        
+
         private int columnCount;
         private int cellsPerColumn;
 //      private int theNum;
-        
+
         private int[] predictedColumns;
         private int[] actual;
         private int[] lastPredicted;
-        
+
         public LayerImpl(Parameters p, ScalarEncoder e, SpatialPooler s, TemporalMemory t, CLAClassifier c) {
             this.params = p;
             this.encoder = e;
             this.spatialPooler = s;
             this.temporalMemory = t;
 //          this.classifier = c;
-            
+
             params.apply(memory);
             spatialPooler.init(memory);
             temporalMemory.init(memory);
-            
-            columnCount = memory.getPotentialPools().getMaxIndex() + 1; //If necessary, flatten multi-dimensional index 
+
+            columnCount = memory.getPotentialPools().getMaxIndex() + 1; //If necessary, flatten multi-dimensional index
             cellsPerColumn = memory.getCellsPerColumn();
         }
-        
+
         @Override
         public void input(Double value, int recordNum, int sequenceNum) {
 //          String recordOut = "";
 //          switch(value.intValue()) {
-//              case 1: recordOut = "Monday (1)";break; 
+//              case 1: recordOut = "Monday (1)";break;
 //              case 2: recordOut = "Tuesday (2)";break;
 //              case 3: recordOut = "Wednesday (3)";break;
 //              case 4: recordOut = "Thursday (4)";break;
@@ -207,29 +207,29 @@ public class QuickTest {
 //              case 6: recordOut = "Saturday (6)";break;
 //              case 7: recordOut = "Sunday (7)";break;
 //          }
-            
+
             if(value.intValue() == 1) {
 //              theNum++;
 //              System.out.println("--------------------------------------------------------");
 //              System.out.println("Iteration: " + theNum);
             }
 //          System.out.println("===== " + recordOut + "  - Sequence Num: " + sequenceNum + " =====");
-            
+
             int[] output = new int[columnCount];
-            
+
             //Input through encoder
 //          System.out.println("ScalarEncoder Input = " + value);
             int[] encoding = encoder.encode(value);
 //          System.out.println("ScalarEncoder Output = " + Arrays.toString(encoding));
             int bucketIdx = encoder.getBucketIndices(value)[0];
-            
+
             //Input through spatial pooler
             spatialPooler.compute(memory, encoding, output, true, true);
 //          System.out.println("SpatialPooler Output = " + Arrays.toString(output));
-            
+
             // Let the SpatialPooler train independently (warm up) first
             if(sequenceNum < 1400) return;
-            
+
             //Input through temporal memory
             int[] input = actual = ArrayUtils.where(output, ArrayUtils.WHERE_1);
             ComputeCycle cc = temporalMemory.compute(memory, input, true);
@@ -237,16 +237,16 @@ public class QuickTest {
             predictedColumns = getSDR(cc.predictiveCells()); //Get the active column indexes
 //          System.out.println("TemporalMemory Input = " + Arrays.toString(input));
 //          System.out.print("TemporalMemory Prediction = " + Arrays.toString(predictedColumns));
-            
+
             classification.put("bucketIdx", bucketIdx);
             classification.put("actValue", value);
 //          ClassifierResult<Double> result = classifier.compute(recordNum, classification, predictedColumns, true, true);
-            
+
 //          System.out.println("  |  CLAClassifier 1 step prob = " + Arrays.toString(result.getStats(1)) + "\n");
-            
+
 //          System.out.println("");
         }
-        
+
         public int[] inflateSDR(int[] SDR, int len) {
             int[] retVal = new int[len];
             for(int i : SDR) {
@@ -254,7 +254,7 @@ public class QuickTest {
             }
             return retVal;
         }
-        
+
         public int[] getSDR(Set<Cell> cells) {
             int[] retVal = new int[cells.size()];
             int i = 0;
@@ -264,20 +264,20 @@ public class QuickTest {
             }
             Arrays.sort(retVal);
             retVal = ArrayUtils.unique(retVal);
-            
+
             return retVal;
         }
-        
+
         /**
          * Returns the next predicted value.
-         * 
+         *
          * @return the SDR representing the prediction
          */
         @Override
         public int[] getPredicted() {
             return lastPredicted;
         }
-        
+
         /**
          * Returns the actual columns in time t + 1 to compare
          * with {@link #getPrediction()} which returns the prediction
@@ -288,7 +288,7 @@ public class QuickTest {
         public int[] getActual() {
             return actual;
         }
-        
+
         /**
          * Simple getter for external reset
          * @return
@@ -297,6 +297,6 @@ public class QuickTest {
             return memory;
         }
     }
-    
-    
+
+
 }

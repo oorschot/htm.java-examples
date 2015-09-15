@@ -28,13 +28,13 @@ import java.util.Random;
 import org.numenta.nupic.Connections;
 import org.numenta.nupic.Parameters;
 import org.numenta.nupic.Parameters.KEY;
-import org.numenta.nupic.research.SpatialPooler;
+import org.numenta.nupic.algorithms.SpatialPooler;
 import org.numenta.nupic.util.ArrayUtils;
 import org.numenta.nupic.util.Condition;
 
 /**
  * A simple program that demonstrates the working of the spatial pooler
- * 
+ *
  * @author Neal Miller
  */
 public class HelloSP {
@@ -45,9 +45,9 @@ public class HelloSP {
     private int[] activeArray;
     private int inputSize;
     private int columnNumber;
-    
+
     /**
-     * 
+     *
      * @param inputDimensions         The size of the input.  {m, n} will give a size of m x n
      * @param columnDimensions        The size of the 2 dimensional array of columns
      */
@@ -61,7 +61,7 @@ public class HelloSP {
             columnNumber *= x;
         }
         activeArray = new int[columnNumber];
-        
+
         parameters = Parameters.getSpatialDefaultParameters();
         parameters.setParameterByKey(KEY.INPUT_DIMENSIONS, inputDimensions);
         parameters.setParameterByKey(KEY.COLUMN_DIMENSIONS, columnDimensions);
@@ -76,7 +76,7 @@ public class HelloSP {
         parameters.apply(mem);
         sp.init(mem);
     }
-    
+
     /**
      * Create a random input vector
      */
@@ -85,16 +85,16 @@ public class HelloSP {
         System.out.print("Creating a random input vector");
         for (int i = 0; i < 70; i++) System.out.print("-");
         System.out.println();
-        
+
         inputArray = new int[inputSize];
-        
+
         Random rand = new Random();
         for (int i = 0; i < inputSize; i++) {
             // nextInt(2) returns 0 or 1
             inputArray[i] = rand.nextInt(2);
         }
     }
-    
+
     /**
      * Run the spatial pooler with the input vector
      */
@@ -103,9 +103,9 @@ public class HelloSP {
         System.out.print("Computing the SDR");
         for (int i = 0; i < 70; i++) System.out.print("-");
         System.out.println();
-        
+
         sp.compute(mem, inputArray, activeArray, true, true);
-        
+
         int[] res = ArrayUtils.where(activeArray, new Condition.Adapter<Object>() {
             public boolean eval(int n) {
                 return n > 0;
@@ -126,21 +126,21 @@ public class HelloSP {
             inputArray[randomPosition] = 1 - inputArray[randomPosition];
         }
     }
-    
+
     public static void main(String args[]) {
         HelloSP example = new HelloSP(new int[]{32, 32}, new int[]{64, 64});
-        
+
         // Lesson 1
         System.out.println("\n \nFollowing columns represent the SDR");
         System.out.println("Different set of columns each time since we randomize the input");
         System.out.println("Lesson - different input vectors give different SDRs\n\n");
-        
+
         //Trying random vectors
         for (int i = 0; i < 3; i++) {
             example.createInput();
             example.run();
         }
-        
+
         //Lesson 2
         System.out.println("\n\nIdentical SDRs because we give identical inputs");
         System.out.println("Lesson - identical inputs give identical SDRs\n\n");
@@ -149,12 +149,12 @@ public class HelloSP {
         System.out.print("Using identical input vectors");
         for (int i = 0; i < 75; i++) System.out.print("-");
         System.out.println();
-    
+
         //Trying identical vectors
         for (int i = 0; i < 2; i++) {
           example.run();
         }
-        
+
         // Lesson 3
         System.out.println("\n\nNow we are changing the input vector slightly.");
         System.out.println("We change a small percentage of 1s to 0s and 0s to 1s.");
