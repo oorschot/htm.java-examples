@@ -41,46 +41,46 @@ import org.numenta.nupic.network.sensor.FileSensor;
 import org.numenta.nupic.network.sensor.Sensor;
 import org.numenta.nupic.network.sensor.SensorParams;
 import org.numenta.nupic.network.sensor.SensorParams.Keys;
-import org.numenta.nupic.research.SpatialPooler;
-import org.numenta.nupic.research.TemporalMemory;
+import org.numenta.nupic.algorithms.SpatialPooler;
+import org.numenta.nupic.algorithms.TemporalMemory;
 
 import rx.Observer;
 import rx.Subscriber;
 
 /**
  * Demonstrates the Java version of the NuPIC Network API (NAPI) Demo.
- * 
- * This demo demonstrates many powerful features of the HTM.java 
+ *
+ * This demo demonstrates many powerful features of the HTM.java
  * NAPI. Looking at the {@link NetworkAPIDemo#createBasicNetwork()} method demonstrates
  * the conciseness of setting up a basic network. As you can see, the network is
  * constructed in fluent style proceeding from the top-level {@link Network} container,
- * to a single {@link Region}; then to a single {@link Layer}. 
- * 
+ * to a single {@link Region}; then to a single {@link Layer}.
+ *
  * Layers contain most of the operation logic and are the only constructs that contain
- * algorithm components (i.e. {@link CLAClassifier}, {@link Anomaly} (the anomaly computer), 
+ * algorithm components (i.e. {@link CLAClassifier}, {@link Anomaly} (the anomaly computer),
  * {@link TemporalMemory}, {@link SpatialPooler}, and {@link Encoder} (actually, a {@link MultiEncoder}
  * which can be the parent of many child encoders).
- * 
- * 
+ *
+ *
  * @author cogmission
  *
  */
 public class NetworkAPIDemo {
     /** 3 modes to choose from to demonstrate network usage */
     static enum Mode { BASIC, MULTILAYER, MULTIREGION };
-    
+
     private Network network;
-    
+
     private File outputFile;
     private PrintWriter pw;
-    
+
     public NetworkAPIDemo(Mode mode) {
         switch(mode) {
             case BASIC: network = createBasicNetwork(); break;
             case MULTILAYER: network = createMultiLayerNetwork(); break;
             case MULTIREGION: network = createMultiRegionNetwork(); break;
         }
-        
+
         network.observe().subscribe(getSubscriber());
         try {
             outputFile = new File(System.getProperty("user.home").concat(File.separator).concat("napi_hotgym_demo_output.txt"));
@@ -89,17 +89,17 @@ public class NetworkAPIDemo {
             e.printStackTrace();
         }
     }
-    
+
     /**
      * Creates a basic {@link Network} with 1 {@link Region} and 1 {@link Layer}. However
      * this basic network contains all algorithmic components.
-     * 
+     *
      * @return  a basic Network
      */
     Network createBasicNetwork() {
         Parameters p = NetworkDemoHarness.getParameters();
         p = p.union(NetworkDemoHarness.getNetworkDemoTestEncoderParams());
-        
+
         // This is how easy it is to create a full running Network!
         return Network.create("Network API Demo", p)
             .add(Network.createRegion("Region 1")
@@ -111,18 +111,18 @@ public class NetworkAPIDemo {
                     .add(Sensor.create(FileSensor::create, SensorParams.create(
                         Keys::path, "", ResourceLocator.path("rec-center-hourly.csv"))))));
     }
-    
+
     /**
-     * Creates a {@link Network} containing one {@link Region} with multiple 
-     * {@link Layer}s. This demonstrates the method by which multiple layers 
+     * Creates a {@link Network} containing one {@link Region} with multiple
+     * {@link Layer}s. This demonstrates the method by which multiple layers
      * are added and connected; and the flexibility of the fluent style api.
-     * 
+     *
      * @return  a multi-layer Network
      */
     Network createMultiLayerNetwork() {
         Parameters p = NetworkDemoHarness.getParameters();
         p = p.union(NetworkDemoHarness.getNetworkDemoTestEncoderParams());
-        
+
         return Network.create("Network API Demo", p)
             .add(Network.createRegion("Region 1")
                 .add(Network.createLayer("Layer 2/3", p)
@@ -137,17 +137,17 @@ public class NetworkAPIDemo {
                 .connect("Layer 2/3", "Layer 4")
                 .connect("Layer 4", "Layer 5"));
     }
-    
+
     /**
      * Creates a {@link Network} containing 2 {@link Region}s with multiple
      * {@link Layer}s in each.
-     * 
+     *
      * @return a multi-region Network
      */
     Network createMultiRegionNetwork() {
         Parameters p = NetworkDemoHarness.getParameters();
         p = p.union(NetworkDemoHarness.getNetworkDemoTestEncoderParams());
-        
+
         return Network.create("Network API Demo", p)
             .add(Network.createRegion("Region 1")
                 .add(Network.createLayer("Layer 2/3", p)
@@ -168,12 +168,12 @@ public class NetworkAPIDemo {
                         Keys::path, "", ResourceLocator.path("rec-center-hourly.csv")))))
                 .connect("Layer 2/3", "Layer 4"))
            .connect("Region 1", "Region 2");
-                     
+
     }
-    
+
     /**
      * Demonstrates the composition of a {@link Subscriber} (may also use
-     * {@link Observer}). There are 3 methods one must be concerned with: 
+     * {@link Observer}). There are 3 methods one must be concerned with:
      * </p>
      * <p>
      * <pre>
@@ -181,41 +181,30 @@ public class NetworkAPIDemo {
      * 2. onError(). Called when there is an underlying exception or error in the processing.
      * 3. onNext(). Called for each processing cycle of the network. This is the method
      * that is overridden to do downstream work in your application.
-     * 
+     *
      * @return
      */
     Subscriber<Inference> getSubscriber() {
-        
+
         return new Subscriber<Inference>() {
-            int outIdx = 0;
             @Override public void onCompleted() {
+                System.out.println("\nstream completed. see output: " + outputFile.getAbsolutePath());
                 try {
                     pw.flush();
                     pw.close();
                 }catch(Exception e) {
                     e.printStackTrace();
                 }
-                // Sample output to demonstrate stream close notification
-                System.out.println("\nStream completed, see output: " + outputFile.getAbsolutePath());
             }
             @Override public void onError(Throwable e) { e.printStackTrace(); }
-            @Override public void onNext(Inference i) {
-                if(outIdx == 0) {
-                    System.out.print("working  ");
-                }
-                writeToFile(i, "consumption");
-                if(outIdx % 100 == 0) {
-                    System.out.print(". ");
-                }
-                ++outIdx;                
-            }
+            @Override public void onNext(Inference i) { writeToFile(i, "consumption"); }
         };
     }
-    
+
     /**
      * Primitive file appender for collecting output. This just demonstrates how to use
      * {@link Subscriber#onNext(Object)} to accomplish some work.
-     * 
+     *
      * @param infer             The {@link Inference} object produced by the Network
      * @param classifierField   The field we use in this demo for anomaly computing.
      */
@@ -227,23 +216,23 @@ public class NetworkAPIDemo {
                 .append(infer.getClassifierInput().get(classifierField).get("inputValue")).append(", ")
                 .append("anomaly score=")
                 .append(infer.getAnomalyScore());
-            
             pw.println(sb.toString());
             pw.flush();
+            System.out.println(sb.toString());
         }catch(Exception e) {
             e.printStackTrace();
             pw.flush();
         }
-        
+
     }
-    
+
     /**
      * Simple run hook
      */
     private void runNetwork() {
         network.start();
     }
-    
+
     /**
      * Main entry point of the demo
      * @param args
