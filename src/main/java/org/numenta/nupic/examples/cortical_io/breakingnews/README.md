@@ -6,7 +6,7 @@ This demo demonstrates the integration of the Java version of  [NuPIC](https://g
 
 This demo uses a previously collected file of data (Tweets) as input in order to detect conversational trends which are grouped according to their contextual similarity to one another. 
 
-![](http://cognitionmission.com/BreakingNews.png)
+![](http://metaware.us/BreakingNews.png)
 
 > Each Tweet is sent to Cortical.io's processing engine which returns a 
 > ["Fingerprint"](http://www.cortical.io/technology_semantic.html) (Cortical.io's special representation of a word or 
