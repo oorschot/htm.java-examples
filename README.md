@@ -20,7 +20,7 @@ For a more detailed discussion of <b>htm.java</b> see: <BR>
 * [htm.java Wiki](https://github.com/numenta/htm.java/wiki)
 * [Java Docs](http://numenta.org/docs/htm.java/)
 
-**NOTE: Minimum JavaSE version is 1.8**  -  Current Version on Maven Central [(0.6.1)] (http://search.maven.org/#search%7Cga%7C1%7Chtm.java)
+**NOTE: Minimum JavaSE version is 1.8**  -  Current Version on Maven Central [(0.6.2)] (http://search.maven.org/#search%7Cga%7C1%7Chtm.java)
 
 ***
 
