@@ -2,6 +2,8 @@
 htm.java-examples
 ========
 
+[![htm.java awesomeness](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](http://cogmission.ai)
+
 **Welcome!**
 
 This is the landing page for demos, and example code written for [htm.java](https://github.com/numenta/htm.java).
