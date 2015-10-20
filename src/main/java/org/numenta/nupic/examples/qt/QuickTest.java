@@ -78,7 +78,7 @@ public class QuickTest {
         //Layer components
         ScalarEncoder.Builder dayBuilder =
             ScalarEncoder.builder()
-                .n(8)
+                .n(12)
                 .w(3)
                 .radius(1.0)
                 .minVal(1.0)
@@ -93,8 +93,11 @@ public class QuickTest {
 
         Layer<Double> layer = getLayer(params, encoder, sp, tm, classifier);
 
-        for(double i = 0, x = 0;x < 10000;i = (i == 6 ? 0 : i + 1), x++) {  // USE "X" here to control run length
-            if (i == 0 && isResetting) tm.reset(layer.getMemory());
+        for(double i = 0, x = 0, j = 0;j < 1500;j = (i == 6 ? j + 1: j), i = (i == 6 ? 0 : i + 1), x++) {  // USE "X" here to control run length
+            if (i == 0 && isResetting) {
+                System.out.println("reset:");
+                tm.reset(layer.getMemory());
+            }
 
             // For 3rd argument: Use "i" for record num if re-cycling records (isResetting == true) - otherwise use "x" (the sequence number)
             runThroughLayer(layer, i + 1, isResetting ? (int)i : (int)x, (int)x);
@@ -104,7 +107,7 @@ public class QuickTest {
 
     public static Parameters getParameters() {
         Parameters parameters = Parameters.getAllDefaultParameters();
-        parameters.setParameterByKey(KEY.INPUT_DIMENSIONS, new int[] { 8 });
+        parameters.setParameterByKey(KEY.INPUT_DIMENSIONS, new int[] { 12 });
         parameters.setParameterByKey(KEY.COLUMN_DIMENSIONS, new int[] { 20 });
         parameters.setParameterByKey(KEY.CELLS_PER_COLUMN, 6);
 
@@ -131,8 +134,8 @@ public class QuickTest {
         parameters.setParameterByKey(KEY.CONNECTED_PERMANENCE, 0.8);
         parameters.setParameterByKey(KEY.MIN_THRESHOLD, 5);
         parameters.setParameterByKey(KEY.MAX_NEW_SYNAPSE_COUNT, 6);
-        parameters.setParameterByKey(KEY.PERMANENCE_INCREMENT, 0.05);
-        parameters.setParameterByKey(KEY.PERMANENCE_DECREMENT, 0.05);
+        parameters.setParameterByKey(KEY.PERMANENCE_INCREMENT, 0.1);//0.05
+        parameters.setParameterByKey(KEY.PERMANENCE_DECREMENT, 0.1);//0.05
         parameters.setParameterByKey(KEY.ACTIVATION_THRESHOLD, 4);
 
         return parameters;
@@ -219,7 +222,7 @@ public class QuickTest {
             if(value.intValue() == 1) {
 //              theNum++;
               System.out.println("--------------------------------------------------------");
-//              System.out.println("Iteration: " + theNum);
+//            System.out.println("Iteration: " + theNum);
             }
 //          System.out.println("===== " + recordOut + "  - Sequence Num: " + sequenceNum + " =====");
 
@@ -236,23 +239,24 @@ public class QuickTest {
 //          System.out.println("SpatialPooler Output = " + Arrays.toString(output));
 
             // Let the SpatialPooler train independently (warm up) first
-            if(sequenceNum < 1400) return;
-
+//            if(theNum < 200) return;
+            
             //Input through temporal memory
             int[] input = actual = ArrayUtils.where(output, ArrayUtils.WHERE_1);
             ComputeCycle cc = temporalMemory.compute(memory, input, true);
             lastPredicted = predictedColumns;
-            predictedColumns = getSDR(cc.activeCells()); //Get the active column indexes
+            predictedColumns = getSDR(cc.predictiveCells()); //Get the predicted column indexes
+//            int[] activeColumns = getSDR(cc.activeCells());  //Get the active columns for classifier input
 //          System.out.println("TemporalMemory Input = " + Arrays.toString(input));
 //          System.out.println("TemporalMemory Prediction = " + Arrays.toString(predictedColumns));
 
             classification.put("bucketIdx", bucketIdx);
             classification.put("actValue", value);
-//          ClassifierResult<Double> result = classifier.compute(recordNum, classification, predictedColumns, true, true);
+//          ClassifierResult<Double> result = classifier.compute(recordNum, classification, activeColumns, true, true);
 //          System.out.print("CLAClassifier prediction = " + stringValue(result.getMostProbableValue(1)));
 //          System.out.println("  |  CLAClassifier 1 step prob = " + Arrays.toString(result.getStats(1)) + "\n");
 
-          System.out.println("");
+//          System.out.println("");
         }
 
         public int[] inflateSDR(int[] SDR, int len) {
