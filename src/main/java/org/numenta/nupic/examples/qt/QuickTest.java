@@ -23,22 +23,24 @@ package org.numenta.nupic.examples.qt;
 
 import gnu.trove.list.array.TIntArrayList;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.numenta.nupic.ComputeCycle;
 import org.numenta.nupic.Connections;
 import org.numenta.nupic.Parameters;
 import org.numenta.nupic.Parameters.KEY;
 import org.numenta.nupic.algorithms.CLAClassifier;
+import org.numenta.nupic.algorithms.SpatialPooler;
+import org.numenta.nupic.algorithms.TemporalMemory;
 //import org.numenta.nupic.algorithms.ClassifierResult;
 import org.numenta.nupic.encoders.ScalarEncoder;
 import org.numenta.nupic.model.Cell;
-import org.numenta.nupic.ComputeCycle;
-import org.numenta.nupic.algorithms.SpatialPooler;
-import org.numenta.nupic.algorithms.TemporalMemory;
 import org.numenta.nupic.util.ArrayUtils;
 /**
  * Quick and dirty example of tying together a network of components.
@@ -194,23 +196,29 @@ public class QuickTest {
             columnCount = memory.getPotentialPools().getMaxIndex() + 1; //If necessary, flatten multi-dimensional index
             cellsPerColumn = memory.getCellsPerColumn();
         }
+        
+        public String stringValue(Double valueIndex) {
+            String recordOut = "";
+            BigDecimal bdValue = new BigDecimal(valueIndex).setScale(3, RoundingMode.HALF_EVEN);
+            switch(bdValue.intValue()) {
+                case 1: recordOut = "Monday (1)";break;
+                case 2: recordOut = "Tuesday (2)";break;
+                case 3: recordOut = "Wednesday (3)";break;
+                case 4: recordOut = "Thursday (4)";break;
+                case 5: recordOut = "Friday (5)";break;
+                case 6: recordOut = "Saturday (6)";break;
+                case 7: recordOut = "Sunday (7)";break;
+            }
+            return recordOut;
+        }
 
         @Override
         public void input(Double value, int recordNum, int sequenceNum) {
-//          String recordOut = "";
-//          switch(value.intValue()) {
-//              case 1: recordOut = "Monday (1)";break;
-//              case 2: recordOut = "Tuesday (2)";break;
-//              case 3: recordOut = "Wednesday (3)";break;
-//              case 4: recordOut = "Thursday (4)";break;
-//              case 5: recordOut = "Friday (5)";break;
-//              case 6: recordOut = "Saturday (6)";break;
-//              case 7: recordOut = "Sunday (7)";break;
-//          }
-
+//          String recordOut = stringValue(value);
+          
             if(value.intValue() == 1) {
 //              theNum++;
-//              System.out.println("--------------------------------------------------------");
+              System.out.println("--------------------------------------------------------");
 //              System.out.println("Iteration: " + theNum);
             }
 //          System.out.println("===== " + recordOut + "  - Sequence Num: " + sequenceNum + " =====");
@@ -234,17 +242,17 @@ public class QuickTest {
             int[] input = actual = ArrayUtils.where(output, ArrayUtils.WHERE_1);
             ComputeCycle cc = temporalMemory.compute(memory, input, true);
             lastPredicted = predictedColumns;
-            predictedColumns = getSDR(cc.predictiveCells()); //Get the active column indexes
+            predictedColumns = getSDR(cc.activeCells()); //Get the active column indexes
 //          System.out.println("TemporalMemory Input = " + Arrays.toString(input));
-//          System.out.print("TemporalMemory Prediction = " + Arrays.toString(predictedColumns));
+//          System.out.println("TemporalMemory Prediction = " + Arrays.toString(predictedColumns));
 
             classification.put("bucketIdx", bucketIdx);
             classification.put("actValue", value);
 //          ClassifierResult<Double> result = classifier.compute(recordNum, classification, predictedColumns, true, true);
-
+//          System.out.print("CLAClassifier prediction = " + stringValue(result.getMostProbableValue(1)));
 //          System.out.println("  |  CLAClassifier 1 step prob = " + Arrays.toString(result.getStats(1)) + "\n");
 
-//          System.out.println("");
+          System.out.println("");
         }
 
         public int[] inflateSDR(int[] SDR, int len) {
