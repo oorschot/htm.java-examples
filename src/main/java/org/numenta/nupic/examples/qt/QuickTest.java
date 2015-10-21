@@ -78,7 +78,7 @@ public class QuickTest {
         //Layer components
         ScalarEncoder.Builder dayBuilder =
             ScalarEncoder.builder()
-                .n(12)
+                .n(8)
                 .w(3)
                 .radius(1.0)
                 .minVal(1.0)
@@ -107,7 +107,7 @@ public class QuickTest {
 
     public static Parameters getParameters() {
         Parameters parameters = Parameters.getAllDefaultParameters();
-        parameters.setParameterByKey(KEY.INPUT_DIMENSIONS, new int[] { 12 });
+        parameters.setParameterByKey(KEY.INPUT_DIMENSIONS, new int[] { 8 });
         parameters.setParameterByKey(KEY.COLUMN_DIMENSIONS, new int[] { 20 });
         parameters.setParameterByKey(KEY.CELLS_PER_COLUMN, 6);
 
@@ -246,17 +246,18 @@ public class QuickTest {
             ComputeCycle cc = temporalMemory.compute(memory, input, true);
             lastPredicted = predictedColumns;
             predictedColumns = getSDR(cc.predictiveCells()); //Get the predicted column indexes
-//            int[] activeColumns = getSDR(cc.activeCells());  //Get the active columns for classifier input
+//            int[] activeCellIndexes = Connections.asCellIndexes(cc.activeCells()).stream().mapToInt(i -> i).sorted().toArray();  //Get the active cells for classifier input
 //          System.out.println("TemporalMemory Input = " + Arrays.toString(input));
 //          System.out.println("TemporalMemory Prediction = " + Arrays.toString(predictedColumns));
 
             classification.put("bucketIdx", bucketIdx);
             classification.put("actValue", value);
-//          ClassifierResult<Double> result = classifier.compute(recordNum, classification, activeColumns, true, true);
+            
+//          ClassifierResult<Double> result = classifier.compute(recordNum, classification, activeCellIndexes, true, true);
 //          System.out.print("CLAClassifier prediction = " + stringValue(result.getMostProbableValue(1)));
 //          System.out.println("  |  CLAClassifier 1 step prob = " + Arrays.toString(result.getStats(1)) + "\n");
 
-//          System.out.println("");
+          System.out.println("");
         }
 
         public int[] inflateSDR(int[] SDR, int len) {
