@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -36,10 +37,13 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import org.numenta.nupic.Parameters.KEY;
+import org.numenta.nupic.SDR;
+import org.numenta.nupic.algorithms.TemporalMemory;
 import org.numenta.nupic.datagen.ResourceLocator;
+import org.numenta.nupic.model.Cell;
+import org.numenta.nupic.network.Layer;
 import org.numenta.nupic.network.Network;
 import org.numenta.nupic.network.sensor.FileSensor;
-import org.numenta.nupic.algorithms.TemporalMemory;
 import org.numenta.nupic.util.ArrayUtils;
 import org.numenta.nupic.util.MersenneTwister;
 import org.slf4j.Logger;
@@ -678,7 +682,9 @@ public class FoxEatsDemo extends Application {
             network.compute(sdr);
         }
 
-        int[] prediction = network.lookup("Region 1").lookup("Layer 2/3").getPredictedColumns();
+        Layer<?> layer = network.lookup("Region 1").lookup("Layer 2/3");
+        Set<Cell> predictiveCells = layer.getPredictiveCells();
+        int[] prediction = SDR.cellsAsColumnIndices(predictiveCells, layer.getConnections().getCellsPerColumn());
         Term term = getClosestTerm(prediction);
         cache.put(term.getTerm(), term);
 
