@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 
+import org.numenta.nupic.SDR;
 import org.numenta.nupic.network.Inference;
 import org.numenta.nupic.network.Network;
 import org.numenta.nupic.util.ArrayUtils;
@@ -43,6 +44,8 @@ public class StrictHackathonAlgorithm implements Algorithm {
     private Network htmNetwork;
     
     private Metric similarities;
+    
+    private int cellsPerColumn;
     
     private int[] currentPrediction;
     private int[] prevPrediction;
@@ -96,15 +99,19 @@ public class StrictHackathonAlgorithm implements Algorithm {
         }
         
         this.htmNetwork = network;
-                        
+        
         network.observe().subscribe(new Subscriber<Inference>() {
             @Override public void onCompleted() {}
             @Override public void onError(Throwable e) {}
             @Override public void onNext(Inference t) {
-                currentPrediction = subsample(t.getSDR());
+                currentPrediction = subsample(
+                    SDR.cellsAsColumnIndices(t.getPredictiveCells(), cellsPerColumn));
                 semaphore.release();
             }
         });
+        
+        this.cellsPerColumn = htmNetwork.getHead().getTail().getConnections().getCellsPerColumn();
+       
     }
     
     /**
@@ -178,7 +185,6 @@ public class StrictHackathonAlgorithm implements Algorithm {
      * @return
      */
     double getSparsity(int[] sdr) {
-        System.out.println("SDR LEN = " + sdr.length);
         double sparsity = (double)sdr.length / (double)SDR_WIDTH;
         return sparsity;
     }

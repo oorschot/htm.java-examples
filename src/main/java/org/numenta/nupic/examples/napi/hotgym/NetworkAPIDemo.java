@@ -214,6 +214,8 @@ public class NetworkAPIDemo {
                 .append(infer.getRecordNum()).append(", ")
                 .append("classifier input=")
                 .append(infer.getClassifierInput().get(classifierField).get("inputValue")).append(", ")
+                .append("prediction= ")
+                .append(infer.getClassification(classifierField).getMostProbableValue(1)).append(", ")
                 .append("anomaly score=")
                 .append(infer.getAnomalyScore());
             pw.println(sb.toString());
