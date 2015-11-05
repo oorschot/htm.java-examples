@@ -4,8 +4,8 @@
 
 	<groupId>org.numenta</groupId>
 	<artifactId>htm.java-examples</artifactId>
-	<version>0.6.2</version>
-	<name>htm.java</name>
+	<version>0.6.5-SNAPSHOT</version>
+	<name>htm.java-examples</name>
 	<description>Example Applications for the Java version of Numenta's HTM technology</description>
 
 	<url>https://github.com/numenta/htm.java</url>
@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>org.numenta</groupId>
 			<artifactId>htm.java</artifactId>
-			<version>0.6.4</version>
+			<version>0.6.5-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>cortical</groupId>

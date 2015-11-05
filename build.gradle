@@ -7,7 +7,7 @@ apply plugin: 'application'
 mainClassName = 'org.numenta.nupic.examples.napi.hotgym.NetworkAPIDemo'
 
 group = 'org.numenta'
-version = '0.6.2'
+version = '0.6.5-SNAPSHOT'
 archivesBaseName = 'htm.java-examples'
 
 sourceCompatibility = 1.8
@@ -15,7 +15,7 @@ targetCompatibility = 1.8
 
 jar {
     manifest {
-        attributes 'Implementation-Title': 'htm.java-examples', 'Implementation-Version': '0.6.2'
+        attributes 'Implementation-Title': 'htm.java-examples', 'Implementation-Version': '0.6.5-SNAPSHOT'
     }
 }
 
@@ -32,7 +32,7 @@ repositories {
 
 dependencies {
     //compile files('libs/cortical.io-widgets-0.9.0.jar','libs/cortical.io-twitter-utils-0.9.0.jar')
-    compile files('libs/htm.java-0.6.2.jar')
+    compile files('libs/htm.java-0.6.5-SNAPSHOT.jar')
     compile group: 'cortical', name: 'cortical-fxwidgets', version: '0.9'
     compile group: 'cortical', name: 'cortical-twitterutils', version: '0.9'
     //compile group: 'org.numenta', name: 'htm.java', version: '0.6.2'
