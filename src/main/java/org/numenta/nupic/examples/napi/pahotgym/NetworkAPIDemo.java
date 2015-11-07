@@ -19,7 +19,7 @@
  * http://numenta.org/licenses/
  * ---------------------------------------------------------------------
  */
-package org.numenta.nupic.examples.napi.hotgym;
+package org.numenta.nupic.examples.napi.pahotgym;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -30,13 +30,13 @@ import org.numenta.nupic.Parameters;
 import org.numenta.nupic.Parameters.KEY;
 import org.numenta.nupic.algorithms.Anomaly;
 import org.numenta.nupic.algorithms.CLAClassifier;
-import org.numenta.nupic.algorithms.SpatialPooler;
+import org.numenta.nupic.algorithms.PASpatialPooler;
 import org.numenta.nupic.algorithms.TemporalMemory;
 import org.numenta.nupic.datagen.ResourceLocator;
 import org.numenta.nupic.encoders.Encoder;
 import org.numenta.nupic.encoders.MultiEncoder;
 import org.numenta.nupic.network.Inference;
-import org.numenta.nupic.network.Layer;
+import org.numenta.nupic.network.PALayer;
 import org.numenta.nupic.network.Network;
 import org.numenta.nupic.network.Region;
 import org.numenta.nupic.network.sensor.FileSensor;
@@ -54,11 +54,11 @@ import rx.Subscriber;
  * NAPI. Looking at the {@link NetworkAPIDemo#createBasicNetwork()} method demonstrates
  * the conciseness of setting up a basic network. As you can see, the network is
  * constructed in fluent style proceeding from the top-level {@link Network} container,
- * to a single {@link Region}; then to a single {@link Layer}.
+ * to a single {@link Region}; then to a single {@link PALayer}.
  *
  * Layers contain most of the operation logic and are the only constructs that contain
  * algorithm components (i.e. {@link CLAClassifier}, {@link Anomaly} (the anomaly computer),
- * {@link TemporalMemory}, {@link SpatialPooler}, and {@link Encoder} (actually, a {@link MultiEncoder}
+ * {@link TemporalMemory}, {@link PASpatialPooler}, and {@link Encoder} (actually, a {@link MultiEncoder}
  * which can be the parent of many child encoders).
  *
  *
@@ -85,7 +85,9 @@ public class NetworkAPIDemo {
 
         network.observe().subscribe(getSubscriber());
         try {
-            outputFile = new File(System.getProperty("user.home").concat(File.separator).concat("napi_hotgym_demo_output.txt"));
+            outputFile = new File(System.getProperty("user.home")
+                                  .concat(File.separator)
+                                  .concat("pa_hotgym_demo_output.txt"));
             pw = new PrintWriter(new FileWriter(outputFile));
         }catch(IOException e) {
             e.printStackTrace();
@@ -93,7 +95,7 @@ public class NetworkAPIDemo {
     }
 
     /**
-     * Creates a basic {@link Network} with 1 {@link Region} and 1 {@link Layer}. However
+     * Creates a basic {@link Network} with 1 {@link Region} and 1 {@link PALayer}. However
      * this basic network contains all algorithmic components.
      *
      * @return  a basic Network
@@ -101,22 +103,32 @@ public class NetworkAPIDemo {
     Network createBasicNetwork() {
         Parameters p = NetworkDemoHarness.getParameters();
         p = p.union(NetworkDemoHarness.getNetworkDemoTestEncoderParams());
+        p.setParameterByKey(KEY.MIN_THRESHOLD, 22); // 22 18
+        p.setParameterByKey(KEY.ACTIVATION_THRESHOLD, 17); // 18
+        p.setParameterByKey(KEY.STIMULUS_THRESHOLD, 0.0); // 0.0
+        p.setParameterByKey(KEY.CELLS_PER_COLUMN, 1); // 0.0
 
         // This is how easy it is to create a full running Network!
+        Region r = Network.createRegion("Region 1");
+        PALayer<?> l = new PALayer("Layer 2/3", null, p);
+        l.setPADepolarize(0.0); // 0.25
+        l.setVerbosity(0);
+        PASpatialPooler sp = new PASpatialPooler();
+
         return Network.create("Network API Demo", p)
-            .add(Network.createRegion("Region 1")
-                .add(Network.createLayer("Layer 2/3", p)
-                    .alterParameter(KEY.AUTO_CLASSIFY, Boolean.TRUE)
-                    .add(Anomaly.create())
-                    .add(new TemporalMemory())
-                    .add(new SpatialPooler())
-                    .add(Sensor.create(FileSensor::create, SensorParams.create(
-                        Keys::path, "", ResourceLocator.path("rec-center-hourly.csv"))))));
+            .add(r
+                    .add(l
+                            .alterParameter(KEY.AUTO_CLASSIFY, Boolean.TRUE)
+                            .add(Anomaly.create())
+                            .add(new TemporalMemory())
+                            .add(sp)
+                            .add(Sensor.create(FileSensor::create, SensorParams.create(
+                                    Keys::path, "", ResourceLocator.path("rec-center-hourly.csv"))))));
     }
 
     /**
      * Creates a {@link Network} containing one {@link Region} with multiple
-     * {@link Layer}s. This demonstrates the method by which multiple layers
+     * {@link PALayer}s. This demonstrates the method by which multiple layers
      * are added and connected; and the flexibility of the fluent style api.
      *
      * @return  a multi-layer Network
@@ -132,7 +144,7 @@ public class NetworkAPIDemo {
                     .add(Anomaly.create())
                     .add(new TemporalMemory()))
                 .add(Network.createLayer("Layer 4", p)
-                    .add(new SpatialPooler()))
+                    .add(new PASpatialPooler()))
                 .add(Network.createLayer("Layer 5", p)
                     .add(Sensor.create(FileSensor::create, SensorParams.create(
                         Keys::path, "", ResourceLocator.path("rec-center-hourly.csv")))))
@@ -142,7 +154,7 @@ public class NetworkAPIDemo {
 
     /**
      * Creates a {@link Network} containing 2 {@link Region}s with multiple
-     * {@link Layer}s in each.
+     * {@link PALayer}s in each.
      *
      * @return a multi-region Network
      */
@@ -157,14 +169,14 @@ public class NetworkAPIDemo {
                     .add(Anomaly.create())
                     .add(new TemporalMemory()))
                 .add(Network.createLayer("Layer 4", p)
-                    .add(new SpatialPooler()))
+                    .add(new PASpatialPooler()))
                 .connect("Layer 2/3", "Layer 4"))
            .add(Network.createRegion("Region 2")
                 .add(Network.createLayer("Layer 2/3", p)
                     .alterParameter(KEY.AUTO_CLASSIFY, Boolean.TRUE)
                     .add(Anomaly.create())
                     .add(new TemporalMemory())
-                    .add(new SpatialPooler()))
+                    .add(new PASpatialPooler()))
                 .add(Network.createLayer("Layer 4", p)
                     .add(Sensor.create(FileSensor::create, SensorParams.create(
                         Keys::path, "", ResourceLocator.path("rec-center-hourly.csv")))))
@@ -213,8 +225,8 @@ public class NetworkAPIDemo {
     private void writeToFile(Inference infer, String classifierField) {
         try {
             double newPrediction;
-            if(null != infer.getClassification(classifierField).getMostProbableValue(1)) {
-                newPrediction = (Double)infer.getClassification(classifierField).getMostProbableValue(1);
+            if(null != infer.getClassification(classifierField).getMostProbableValue(5)) {
+                newPrediction = (Double)infer.getClassification(classifierField).getMostProbableValue(5);
             } else {
                 newPrediction = predictedValue;
             }
@@ -225,10 +237,10 @@ public class NetworkAPIDemo {
                 StringBuilder sb = new StringBuilder()
                         .append(infer.getRecordNum()).append(", ")
                                 //.append("classifier input=")
-                        .append(String.format("%3.2f", actual)).append(", ")
+                        .append(String.format("%3.2f", actual)).append(",\t")
                                 //.append("prediction= ")
-                        .append(String.format("%3.2f", predictedValue)).append(", ")
-                        .append(String.format("%3.2f", error)).append(", ")
+                        .append(String.format("%3.2f", predictedValue)).append(",\t")
+                        .append(String.format("%3.2f", error)).append(",\t")
                                 //.append("anomaly score=")
                         .append(infer.getAnomalyScore());
                 pw.println(sb.toString());
@@ -259,7 +271,7 @@ public class NetworkAPIDemo {
     public static void main(String[] args) {
         // Substitute the other modes here to see alternate examples of Network construction
         // in operation.
-        NetworkAPIDemo demo = new NetworkAPIDemo(Mode.MULTILAYER);
+        NetworkAPIDemo demo = new NetworkAPIDemo(Mode.BASIC);
         demo.runNetwork();
     }
 }
