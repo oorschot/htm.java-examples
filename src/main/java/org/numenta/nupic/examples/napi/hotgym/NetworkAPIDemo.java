@@ -259,7 +259,7 @@ public class NetworkAPIDemo {
     public static void main(String[] args) {
         // Substitute the other modes here to see alternate examples of Network construction
         // in operation.
-        NetworkAPIDemo demo = new NetworkAPIDemo(Mode.BASIC);
+        NetworkAPIDemo demo = new NetworkAPIDemo(Mode.MULTILAYER);
         demo.runNetwork();
     }
 }
