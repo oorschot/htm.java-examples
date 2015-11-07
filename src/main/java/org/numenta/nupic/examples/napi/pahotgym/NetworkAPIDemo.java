@@ -225,8 +225,8 @@ public class NetworkAPIDemo {
     private void writeToFile(Inference infer, String classifierField) {
         try {
             double newPrediction;
-            if(null != infer.getClassification(classifierField).getMostProbableValue(1)) {
-                newPrediction = (Double)infer.getClassification(classifierField).getMostProbableValue(1);
+            if(null != infer.getClassification(classifierField).getMostProbableValue(5)) {
+                newPrediction = (Double)infer.getClassification(classifierField).getMostProbableValue(5);
             } else {
                 newPrediction = predictedValue;
             }
