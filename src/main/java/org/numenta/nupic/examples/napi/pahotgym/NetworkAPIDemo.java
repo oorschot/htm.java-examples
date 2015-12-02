@@ -87,7 +87,7 @@ public class NetworkAPIDemo {
         try {
             outputFile = new File(System.getProperty("user.home")
                                   .concat(File.separator)
-                                  .concat("pa_hotgym_demo_output.txt"));
+                                  .concat("pa_hotgym_15_output.txt"));
             pw = new PrintWriter(new FileWriter(outputFile));
         }catch(IOException e) {
             e.printStackTrace();
@@ -104,9 +104,9 @@ public class NetworkAPIDemo {
         Parameters p = NetworkDemoHarness.getParameters();
         p = p.union(NetworkDemoHarness.getNetworkDemoTestEncoderParams());
         p.setParameterByKey(KEY.MIN_THRESHOLD, 22); // 22 18
-        p.setParameterByKey(KEY.ACTIVATION_THRESHOLD, 17); // 18
+        p.setParameterByKey(KEY.ACTIVATION_THRESHOLD, 16); // 18
         p.setParameterByKey(KEY.STIMULUS_THRESHOLD, 0.0); // 0.0
-        p.setParameterByKey(KEY.CELLS_PER_COLUMN, 1); // 0.0
+        p.setParameterByKey(KEY.CELLS_PER_COLUMN, 1); // 1
 
         // This is how easy it is to create a full running Network!
         Region r = Network.createRegion("Region 1");
@@ -114,6 +114,8 @@ public class NetworkAPIDemo {
         l.setPADepolarize(0.0); // 0.25
         l.setVerbosity(0);
         PASpatialPooler sp = new PASpatialPooler();
+        String infile = "rec-center-hourly.csv";
+        infile = "rec-center-15m.csv";
 
         return Network.create("Network API Demo", p)
             .add(r
@@ -123,7 +125,7 @@ public class NetworkAPIDemo {
                             .add(new TemporalMemory())
                             .add(sp)
                             .add(Sensor.create(FileSensor::create, SensorParams.create(
-                                    Keys::path, "", ResourceLocator.path("rec-center-hourly.csv"))))));
+                                    Keys::path, "", ResourceLocator.path(infile))))));
     }
 
     /**
@@ -225,8 +227,8 @@ public class NetworkAPIDemo {
     private void writeToFile(Inference infer, String classifierField) {
         try {
             double newPrediction;
-            if(null != infer.getClassification(classifierField).getMostProbableValue(5)) {
-                newPrediction = (Double)infer.getClassification(classifierField).getMostProbableValue(5);
+            if(null != infer.getClassification(classifierField).getMostProbableValue(1)) {
+                newPrediction = (Double)infer.getClassification(classifierField).getMostProbableValue(1);
             } else {
                 newPrediction = predictedValue;
             }
@@ -245,7 +247,9 @@ public class NetworkAPIDemo {
                         .append(infer.getAnomalyScore());
                 pw.println(sb.toString());
                 pw.flush();
-                System.out.println(sb.toString());
+                if(infer.getRecordNum() % 100 == 0) {
+                    System.out.println(sb.toString());
+                }
             } else {
 
             }

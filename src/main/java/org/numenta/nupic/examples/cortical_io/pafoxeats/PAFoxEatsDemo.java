@@ -362,9 +362,18 @@ public class PAFoxEatsDemo extends Application {
      * @throws JsonProcessingException
      */
     List<Term> getSimilarTerms(Fingerprint fp) throws ApiException, JsonProcessingException {
+        System.out.println(fp.toJson());
         return exprApi.getSimilarTerms(fp);
     }
 
+    String sdrToString(int[] sdr) {
+        StringBuilder sb = new StringBuilder("{");
+        for(int i: sdr) {
+            sb.append(i).append(", ");
+        }
+        sb.append("}");
+        return sb.toString();
+    }
     /**
      * Returns the most similar {@link Term} for the term represented by
      * the specified sdr
@@ -374,6 +383,7 @@ public class PAFoxEatsDemo extends Application {
      */
     Term getClosestTerm(int[] sdr) {
         Fingerprint fp = new Fingerprint(sdr);
+        System.out.println(sdrToString(sdr));
         try {
             List<Term> terms = getSimilarTerms(fp);
 
@@ -549,11 +559,29 @@ public class PAFoxEatsDemo extends Application {
         tmParams.setParameterByKey(KEY.CELLS_PER_COLUMN, 8);
         tmParams.setParameterByKey(KEY.CONNECTED_PERMANENCE, 0.5);
         tmParams.setParameterByKey(KEY.INITIAL_PERMANENCE, 0.4);
-        tmParams.setParameterByKey(KEY.MIN_THRESHOLD, 164);
-        tmParams.setParameterByKey(KEY.MAX_NEW_SYNAPSE_COUNT, 164);
+        //tmParams.setParameterByKey(KEY.MIN_THRESHOLD, 164);
+        //tmParams.setParameterByKey(KEY.MAX_NEW_SYNAPSE_COUNT, 164);
+        //tmParams.setParameterByKey(KEY.ACTIVATION_THRESHOLD, 164);
+
+        tmParams.setParameterByKey(KEY.MIN_THRESHOLD, 82);
+        tmParams.setParameterByKey(KEY.MAX_NEW_SYNAPSE_COUNT, 82);
+        tmParams.setParameterByKey(KEY.ACTIVATION_THRESHOLD, 82);
+
         tmParams.setParameterByKey(KEY.PERMANENCE_INCREMENT, 0.1);
-        tmParams.setParameterByKey(KEY.PERMANENCE_DECREMENT, 0.0);
-        tmParams.setParameterByKey(KEY.ACTIVATION_THRESHOLD, 164);
+        tmParams.setParameterByKey(KEY.PERMANENCE_DECREMENT, 0.01);
+
+        tmParams.setParameterByKey(KEY.GLOBAL_INHIBITIONS, false);
+        //tmParams.setParameterByKey(KEY.RADIUS, 4.0);
+        tmParams.setParameterByKey(KEY.INHIBITION_RADIUS, 10);
+        tmParams.setParameterByKey(KEY.POTENTIAL_RADIUS, 10);
+
+        tmParams.setParameterByKey(KEY.SYN_PERM_CONNECTED, 0.1);
+        tmParams.setParameterByKey(KEY.SYN_PERM_ACTIVE_INC, 0.9);
+        tmParams.setParameterByKey(KEY.SYN_PERM_INACTIVE_DEC, 0.01);
+        //tmParams.setParameterByKey(KEY., 1.0);
+        tmParams.setParameterByKey(KEY.POTENTIAL_PCT, 1.0);
+        tmParams.setParameterByKey(KEY.STIMULUS_THRESHOLD, 0.0);
+        //tmParams.setParameterByKey(KEY.SP_ONE_TO_ONE, true);
 
         return tmParams;
     }
@@ -565,8 +593,9 @@ public class PAFoxEatsDemo extends Application {
     Network createNetwork() {
         org.numenta.nupic.Parameters temporalParams = createParameters();
         PALayer<?> l = new PALayer("Layer 2/3", null, temporalParams);
-        l.setPADepolarize(0.0); // 0.25
+        l.setPADepolarize(1.0); // 0.25
         l.setVerbosity(1);
+        //l.getConnections().setSPOneToOne(true);
         PASpatialPooler sp = new PASpatialPooler();
 
 
@@ -588,6 +617,8 @@ public class PAFoxEatsDemo extends Application {
     String[] feedNetwork(Network network, Iterator<String[]> it) {
         (new Thread() {
             public void run() {
+                PALayer<?> l = (PALayer<?>)network.lookup("Region 1").lookup("Layer 2/3");
+                //l.getConnections().setSPOneToOne(false);
                 for(;it.hasNext();) {
                     String[] next = it.next();
 
@@ -600,6 +631,15 @@ public class PAFoxEatsDemo extends Application {
                     }
 
                     feedLine(network, next);
+                    feedLine(network, next);
+                    feedLine(network, next);
+                    //Set<Cell> activeCells = l.getConnections().getActiveCells();
+                    //int[] spSDR = SDR.cellsAsColumnIndices(activeCells, l.getConnections().getCellsPerColumn());
+                    int[] activeColumns = l.getFeedForwardActiveColumns();
+                    System.out.println("activeCells " //+ sdrToString(spSDR)
+                            + " cols " + ArrayUtils.sum(activeColumns));
+                    mem();
+
                 }
 
                 Platform.runLater(() -> { callback.call(finalResult); });
@@ -656,7 +696,7 @@ public class PAFoxEatsDemo extends Application {
     void feedLine(Network network, String[] phrase) {
         for(String term : phrase) {
             int[] sdr = getFingerprintSDR(term);
-            System.out.println(String.format("SDR for '%s'\t%d",term,sdr.length));
+            //System.out.println(String.format("SDR for '%s'\t%d",term,sdr.length));
             network.compute(sdr);
         }
 
@@ -694,16 +734,43 @@ public class PAFoxEatsDemo extends Application {
             int[] sdr = getFingerprintSDR(phrase[i]);
             network.compute(sdr);
         }
+        int[] sdr = new int[128 * 128];
+        Arrays.fill(sdr, 1);
 
         Layer<?> layer = network.lookup("Region 1").lookup("Layer 2/3");
-        Set<Cell> predictiveCells = layer.getPredictiveCells();
+        Set<Cell> predictiveCells = layer.getConnections().getPredictiveCells();
+        System.out.println("predictiveCells " + predictiveCells.toString());
         int[] prediction = SDR.cellsAsColumnIndices(predictiveCells, layer.getConnections().getCellsPerColumn());
+
+        network.compute(sdr);
+        Set<Cell> ffActive = layer.getActiveCells();
+        System.out.println("activeCells " + ffActive.toString());
+        int[] paPrediction = SDR.cellsAsColumnIndices(ffActive, layer.getConnections().getCellsPerColumn());
+
         Term term = getClosestTerm(prediction);
+        Term paterm = getClosestTerm(paPrediction);
+
+        System.out.println(paterm.toString());
+
         cache.put(term.getTerm(), term);
 
         return term;
     }
 
+    void mem() {
+        int mb = 1024 * 1024;
+
+        // get Runtime instance
+        Runtime instance = Runtime.getRuntime();
+
+        //System.out.println("***** Heap utilization statistics [MB] *****\n");
+
+        // available memory
+        System.out.println("Total: " + instance.totalMemory() / mb
+                + "\tFree: " + instance.freeMemory() / mb
+                + "\tUsed Memory: " + (instance.totalMemory() - instance.freeMemory()) / mb
+                + "\tMax Memory: " + instance.maxMemory() / mb);
+    }
     @Override
     public void start(Stage stage) throws Exception {
         Application.Parameters params = getParameters();

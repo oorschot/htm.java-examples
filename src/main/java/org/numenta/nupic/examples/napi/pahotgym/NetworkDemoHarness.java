@@ -82,10 +82,10 @@ public class NetworkDemoHarness {
                 25, 
                 3, 
                 0, 0, 0, 0.1, null, null, null, 
-                "consumption", "float", "RandomDistributedScalarEncoder");
-        
-        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_DOFW.getFieldName(), new Tuple(1, 1.0)); // Day of week
-        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_TOFD.getFieldName(), new Tuple(5, 4.0)); // Time of day
+                "consumption", "float", "AdaptiveScalarEncoder");
+
+        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_HOW.getFieldName(), new Tuple(21, 24.0)); // Day of week
+        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_TOFD.getFieldName(), new Tuple(21, 4.0)); // Time of day
         fieldEncodings.get("timestamp").put(KEY.DATEFIELD_PATTERN.getFieldName(), "MM/dd/YY HH:mm");
         
         return fieldEncodings;
@@ -104,14 +104,18 @@ public class NetworkDemoHarness {
                 "timestamp", "datetime", "DateEncoder");
         fieldEncodings = setupMap(
                 fieldEncodings, 
-                128,
+                160, // 128
                 21, 
-                0, 90.0, 0, 0.5, null, Boolean.TRUE, null,
-                "consumption", "float", "RandomDistributedScalarEncoder");
-        
-        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_TOFD.getFieldName(), new Tuple(21,9.5)); // Time of day
-        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_PATTERN.getFieldName(), "MM/dd/YY HH:mm");
-        
+                0, 30.0, // 90.0
+                0, 0.5, null, Boolean.TRUE, null,
+                "consumption", "float", "AdaptiveScalarEncoder");
+
+        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_TOFD.getFieldName(), new Tuple(11,9.5)); // Time of day
+        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_HOW.getFieldName(), new Tuple(11,24.0)); // Hours of week
+        //fieldEncodings.get("timestamp").put(KEY.DATEFIELD_PATTERN.getFieldName(), "MM/dd/YY HH:mm");
+        // 2010-07-02 00:00,5.3
+        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_PATTERN.getFieldName(), "YYYY-MM-dd HH:mm");
+
         return fieldEncodings;
     }
     
@@ -135,7 +139,7 @@ public class NetworkDemoHarness {
         //p.setParameterByKey(KEY.SYN_PERM_ACTIVE_INC, 0.0001);
         //p.setParameterByKey(KEY.SYN_PERM_INACTIVE_DEC, 0.0005);
         p.setParameterByKey(KEY.SYN_PERM_ACTIVE_INC, 0.07); // 0.07
-        p.setParameterByKey(KEY.SYN_PERM_INACTIVE_DEC, 0.02); // 0.01
+        p.setParameterByKey(KEY.SYN_PERM_INACTIVE_DEC, 0.01); // 0.01
         //p.setParameterByKey(KEY.MAX_BOOST, 1.0);
         p.setParameterByKey(KEY.MAX_BOOST, 1.05);
         //p.setParameterByKey(KEY.MAX_BOOST, 2.0);
@@ -146,7 +150,7 @@ public class NetworkDemoHarness {
         p.setParameterByKey(KEY.PERMANENCE_DECREMENT, 0.01);
         //p.setParameterByKey(KEY.MIN_THRESHOLD, 18);
         p.setParameterByKey(KEY.MIN_THRESHOLD, 22); // 22
-        p.setParameterByKey(KEY.ACTIVATION_THRESHOLD, 18); // 16
+        p.setParameterByKey(KEY.ACTIVATION_THRESHOLD, 16); // 16
         
         p.setParameterByKey(KEY.CLIP_INPUT, true);
         p.setParameterByKey(KEY.FIELD_ENCODING_MAP, fieldEncodings);
