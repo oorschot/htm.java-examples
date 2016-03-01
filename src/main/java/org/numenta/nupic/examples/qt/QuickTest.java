@@ -178,12 +178,12 @@ public class QuickTest {
         private ScalarEncoder encoder;
         private SpatialPooler spatialPooler;
         private TemporalMemory temporalMemory;
-      private CLAClassifier classifier;
+        private CLAClassifier classifier;
         private Map<String, Object> classification = new LinkedHashMap<String, Object>();
 
         private int columnCount;
         private int cellsPerColumn;
-      private int theNum;
+        private int theNum;
 
         private int[] predictedColumns;
         private int[] actual;
