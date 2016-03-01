@@ -41,7 +41,6 @@ import org.numenta.nupic.SDR;
 import org.numenta.nupic.algorithms.PASpatialPooler;
 import org.numenta.nupic.algorithms.TemporalMemory;
 import org.numenta.nupic.datagen.ResourceLocator;
-import org.numenta.nupic.encoders.SDRPassThroughEncoder;
 import org.numenta.nupic.model.Cell;
 import org.numenta.nupic.network.Layer;
 import org.numenta.nupic.network.Network;
@@ -570,7 +569,7 @@ public class PAFoxEatsDemo extends Application {
         tmParams.setParameterByKey(KEY.PERMANENCE_INCREMENT, 0.1);
         tmParams.setParameterByKey(KEY.PERMANENCE_DECREMENT, 0.01);
 
-        tmParams.setParameterByKey(KEY.GLOBAL_INHIBITIONS, false);
+        tmParams.setParameterByKey(KEY.GLOBAL_INHIBITION, false);
         //tmParams.setParameterByKey(KEY.RADIUS, 4.0);
         tmParams.setParameterByKey(KEY.INHIBITION_RADIUS, 10);
         tmParams.setParameterByKey(KEY.POTENTIAL_RADIUS, 10);
@@ -592,7 +591,7 @@ public class PAFoxEatsDemo extends Application {
      */
     Network createNetwork() {
         org.numenta.nupic.Parameters temporalParams = createParameters();
-        PALayer<?> l = new PALayer("Layer 2/3", null, temporalParams);
+        PALayer<?> l = new PALayer<>("Layer 2/3", null, temporalParams);
         l.setPADepolarize(1.0); // 0.25
         l.setVerbosity(1);
         //l.getConnections().setSPOneToOne(true);
