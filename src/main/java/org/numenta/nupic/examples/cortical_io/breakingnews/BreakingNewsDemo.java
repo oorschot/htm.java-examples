@@ -109,7 +109,7 @@ public class BreakingNewsDemo extends Application {
      */
     public org.numenta.nupic.Parameters getHTMParameters() {
         org.numenta.nupic.Parameters p = org.numenta.nupic.Parameters.getAllDefaultParameters();
-        p.setParameterByKey(KEY.GLOBAL_INHIBITIONS, true);
+        p.setParameterByKey(KEY.GLOBAL_INHIBITION, true);
         p.setParameterByKey(KEY.COLUMN_DIMENSIONS, new int[] { 16384 });
         p.setParameterByKey(KEY.INPUT_DIMENSIONS, new int[]{ 16384 });
         p.setParameterByKey(KEY.CELLS_PER_COLUMN, 32);

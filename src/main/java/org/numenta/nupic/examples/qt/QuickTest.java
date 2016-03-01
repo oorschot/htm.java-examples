@@ -36,12 +36,14 @@ import org.numenta.nupic.Connections;
 import org.numenta.nupic.Parameters;
 import org.numenta.nupic.Parameters.KEY;
 import org.numenta.nupic.algorithms.CLAClassifier;
+import org.numenta.nupic.algorithms.ClassifierResult;
 import org.numenta.nupic.algorithms.SpatialPooler;
 import org.numenta.nupic.algorithms.TemporalMemory;
 //import org.numenta.nupic.algorithms.ClassifierResult;
 import org.numenta.nupic.encoders.ScalarEncoder;
 import org.numenta.nupic.model.Cell;
 import org.numenta.nupic.util.ArrayUtils;
+import org.numenta.nupic.util.FastRandom;
 /**
  * Quick and dirty example of tying together a network of components.
  * This should hold off peeps until the Network API is complete.
@@ -114,7 +116,7 @@ public class QuickTest {
         //SpatialPooler specific
         parameters.setParameterByKey(KEY.POTENTIAL_RADIUS, 12);//3
         parameters.setParameterByKey(KEY.POTENTIAL_PCT, 0.5);//0.5
-        parameters.setParameterByKey(KEY.GLOBAL_INHIBITIONS, false);
+        parameters.setParameterByKey(KEY.GLOBAL_INHIBITION, false);
         parameters.setParameterByKey(KEY.LOCAL_AREA_DENSITY, -1.0);
         parameters.setParameterByKey(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 5.0);
         parameters.setParameterByKey(KEY.STIMULUS_THRESHOLD, 1.0);
@@ -137,6 +139,8 @@ public class QuickTest {
         parameters.setParameterByKey(KEY.PERMANENCE_INCREMENT, 0.1);//0.05
         parameters.setParameterByKey(KEY.PERMANENCE_DECREMENT, 0.1);//0.05
         parameters.setParameterByKey(KEY.ACTIVATION_THRESHOLD, 4);
+        
+        parameters.setParameterByKey(KEY.RANDOM, new FastRandom());
 
         return parameters;
     }
@@ -174,12 +178,12 @@ public class QuickTest {
         private ScalarEncoder encoder;
         private SpatialPooler spatialPooler;
         private TemporalMemory temporalMemory;
-//      private CLAClassifier classifier;
+      private CLAClassifier classifier;
         private Map<String, Object> classification = new LinkedHashMap<String, Object>();
 
         private int columnCount;
         private int cellsPerColumn;
-//      private int theNum;
+      private int theNum;
 
         private int[] predictedColumns;
         private int[] actual;
@@ -190,7 +194,7 @@ public class QuickTest {
             this.encoder = e;
             this.spatialPooler = s;
             this.temporalMemory = t;
-//          this.classifier = c;
+            this.classifier = c;
 
             params.apply(memory);
             spatialPooler.init(memory);
@@ -217,45 +221,45 @@ public class QuickTest {
 
         @Override
         public void input(Double value, int recordNum, int sequenceNum) {
-//          String recordOut = stringValue(value);
+            String recordOut = stringValue(value);
           
             if(value.intValue() == 1) {
-//              theNum++;
+                theNum++;
               System.out.println("--------------------------------------------------------");
-//            System.out.println("Iteration: " + theNum);
+              System.out.println("Iteration: " + theNum);
             }
-//          System.out.println("===== " + recordOut + "  - Sequence Num: " + sequenceNum + " =====");
+          System.out.println("===== " + recordOut + "  - Sequence Num: " + sequenceNum + " =====");
 
             int[] output = new int[columnCount];
 
             //Input through encoder
-//          System.out.println("ScalarEncoder Input = " + value);
+          System.out.println("ScalarEncoder Input = " + value);
             int[] encoding = encoder.encode(value);
-//          System.out.println("ScalarEncoder Output = " + Arrays.toString(encoding));
+          System.out.println("ScalarEncoder Output = " + Arrays.toString(encoding));
             int bucketIdx = encoder.getBucketIndices(value)[0];
 
             //Input through spatial pooler
             spatialPooler.compute(memory, encoding, output, true, true);
-//          System.out.println("SpatialPooler Output = " + Arrays.toString(output));
+          System.out.println("SpatialPooler Output = " + Arrays.toString(output));
 
             // Let the SpatialPooler train independently (warm up) first
-//            if(theNum < 200) return;
+            if(theNum < 200) return;
             
             //Input through temporal memory
             int[] input = actual = ArrayUtils.where(output, ArrayUtils.WHERE_1);
             ComputeCycle cc = temporalMemory.compute(memory, input, true);
             lastPredicted = predictedColumns;
             predictedColumns = getSDR(cc.predictiveCells()); //Get the predicted column indexes
-//            int[] activeCellIndexes = Connections.asCellIndexes(cc.activeCells()).stream().mapToInt(i -> i).sorted().toArray();  //Get the active cells for classifier input
-//          System.out.println("TemporalMemory Input = " + Arrays.toString(input));
-//          System.out.println("TemporalMemory Prediction = " + Arrays.toString(predictedColumns));
+            int[] activeCellIndexes = Connections.asCellIndexes(cc.activeCells()).stream().mapToInt(i -> i).sorted().toArray();  //Get the active cells for classifier input
+          System.out.println("TemporalMemory Input = " + Arrays.toString(input));
+          System.out.println("TemporalMemory Prediction = " + Arrays.toString(predictedColumns));
 
             classification.put("bucketIdx", bucketIdx);
             classification.put("actValue", value);
             
-//          ClassifierResult<Double> result = classifier.compute(recordNum, classification, activeCellIndexes, true, true);
-//          System.out.print("CLAClassifier prediction = " + stringValue(result.getMostProbableValue(1)));
-//          System.out.println("  |  CLAClassifier 1 step prob = " + Arrays.toString(result.getStats(1)) + "\n");
+          ClassifierResult<Double> result = classifier.compute(recordNum, classification, activeCellIndexes, true, true);
+          System.out.print("CLAClassifier prediction = " + stringValue(result.getMostProbableValue(1)));
+          System.out.println("  |  CLAClassifier 1 step prob = " + Arrays.toString(result.getStats(1)) + "\n");
 
           System.out.println("");
         }

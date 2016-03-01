@@ -123,7 +123,7 @@ public class NetworkDemoHarness {
         Map<String, Map<String, Object>> fieldEncodings = getNetworkDemoFieldEncodingMap();
 
         Parameters p = Parameters.getEncoderDefaultParameters();
-        p.setParameterByKey(KEY.GLOBAL_INHIBITIONS, true);
+        p.setParameterByKey(KEY.GLOBAL_INHIBITION, true);
         p.setParameterByKey(KEY.COLUMN_DIMENSIONS, new int[] { 2048 });
         p.setParameterByKey(KEY.CELLS_PER_COLUMN, 32);
         p.setParameterByKey(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 40.0);
@@ -199,7 +199,7 @@ public class NetworkDemoHarness {
         //SpatialPooler specific
         parameters.setParameterByKey(KEY.POTENTIAL_RADIUS, 12);//3
         parameters.setParameterByKey(KEY.POTENTIAL_PCT, 0.5);//0.5
-        parameters.setParameterByKey(KEY.GLOBAL_INHIBITIONS, false);
+        parameters.setParameterByKey(KEY.GLOBAL_INHIBITION, false);
         parameters.setParameterByKey(KEY.LOCAL_AREA_DENSITY, -1.0);
         parameters.setParameterByKey(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 5.0);
         parameters.setParameterByKey(KEY.STIMULUS_THRESHOLD, 1.0);
