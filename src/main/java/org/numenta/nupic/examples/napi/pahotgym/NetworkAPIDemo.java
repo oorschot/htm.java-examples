@@ -110,7 +110,7 @@ public class NetworkAPIDemo {
 
         // This is how easy it is to create a full running Network!
         Region r = Network.createRegion("Region 1");
-        PALayer<?> l = new PALayer("Layer 2/3", null, p);
+        PALayer<?> l = new PALayer<>("Layer 2/3", null, p);
         l.setPADepolarize(0.0); // 0.25
         l.setVerbosity(0);
         PASpatialPooler sp = new PASpatialPooler();
@@ -119,13 +119,13 @@ public class NetworkAPIDemo {
 
         return Network.create("Network API Demo", p)
             .add(r
-                    .add(l
-                            .alterParameter(KEY.AUTO_CLASSIFY, Boolean.TRUE)
-                            .add(Anomaly.create())
-                            .add(new TemporalMemory())
-                            .add(sp)
-                            .add(Sensor.create(FileSensor::create, SensorParams.create(
-                                    Keys::path, "", ResourceLocator.path(infile))))));
+                .add(l
+                    .alterParameter(KEY.AUTO_CLASSIFY, Boolean.TRUE)
+                    .add(Anomaly.create())
+                    .add(new TemporalMemory())
+                    .add(sp)
+                    .add(Sensor.create(FileSensor::create, SensorParams.create(
+                        Keys::path, "", ResourceLocator.path(infile))))));
     }
 
     /**

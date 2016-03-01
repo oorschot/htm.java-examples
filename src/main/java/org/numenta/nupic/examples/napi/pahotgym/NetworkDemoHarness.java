@@ -84,8 +84,8 @@ public class NetworkDemoHarness {
                 0, 0, 0, 0.1, null, null, null, 
                 "consumption", "float", "AdaptiveScalarEncoder");
 
-        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_HOW.getFieldName(), new Tuple(21, 24.0)); // Day of week
-        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_TOFD.getFieldName(), new Tuple(21, 4.0)); // Time of day
+        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_DOFW.getFieldName(), new Tuple(1, 1.0)); // Day of week
+        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_TOFD.getFieldName(), new Tuple(5, 4.0)); // Time of day
         fieldEncodings.get("timestamp").put(KEY.DATEFIELD_PATTERN.getFieldName(), "MM/dd/YY HH:mm");
         
         return fieldEncodings;
@@ -110,11 +110,8 @@ public class NetworkDemoHarness {
                 0, 0.5, null, Boolean.TRUE, null,
                 "consumption", "float", "AdaptiveScalarEncoder");
 
-        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_TOFD.getFieldName(), new Tuple(11,9.5)); // Time of day
-        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_HOW.getFieldName(), new Tuple(11,24.0)); // Hours of week
-        //fieldEncodings.get("timestamp").put(KEY.DATEFIELD_PATTERN.getFieldName(), "MM/dd/YY HH:mm");
-        // 2010-07-02 00:00,5.3
-        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_PATTERN.getFieldName(), "YYYY-MM-dd HH:mm");
+        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_TOFD.getFieldName(), new Tuple(21,9.5)); // Time of day
+        fieldEncodings.get("timestamp").put(KEY.DATEFIELD_PATTERN.getFieldName(), "MM/dd/YY HH:mm");;
 
         return fieldEncodings;
     }
@@ -127,7 +124,7 @@ public class NetworkDemoHarness {
         Map<String, Map<String, Object>> fieldEncodings = getNetworkDemoFieldEncodingMap();
 
         Parameters p = Parameters.getEncoderDefaultParameters();
-        p.setParameterByKey(KEY.GLOBAL_INHIBITIONS, true);
+        p.setParameterByKey(KEY.GLOBAL_INHIBITION, true);
         p.setParameterByKey(KEY.COLUMN_DIMENSIONS, new int[] { 2048 });
         p.setParameterByKey(KEY.CELLS_PER_COLUMN, 32);
         p.setParameterByKey(KEY.CELLS_PER_COLUMN, 16);
@@ -211,7 +208,7 @@ public class NetworkDemoHarness {
         //SpatialPooler specific
         parameters.setParameterByKey(KEY.POTENTIAL_RADIUS, 12);//3
         parameters.setParameterByKey(KEY.POTENTIAL_PCT, 0.5);//0.5
-        parameters.setParameterByKey(KEY.GLOBAL_INHIBITIONS, false);
+        parameters.setParameterByKey(KEY.GLOBAL_INHIBITION, false);
         parameters.setParameterByKey(KEY.LOCAL_AREA_DENSITY, -1.0);
         parameters.setParameterByKey(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 5.0);
         parameters.setParameterByKey(KEY.STIMULUS_THRESHOLD, 1.0);
