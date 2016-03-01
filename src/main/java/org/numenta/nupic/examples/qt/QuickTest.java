@@ -104,7 +104,6 @@ public class QuickTest {
             // For 3rd argument: Use "i" for record num if re-cycling records (isResetting == true) - otherwise use "x" (the sequence number)
             runThroughLayer(layer, i + 1, isResetting ? (int)i : (int)x, (int)x);
         }
-
     }
 
     public static Parameters getParameters() {
@@ -178,12 +177,12 @@ public class QuickTest {
         private ScalarEncoder encoder;
         private SpatialPooler spatialPooler;
         private TemporalMemory temporalMemory;
-      private CLAClassifier classifier;
+        private CLAClassifier classifier;
         private Map<String, Object> classification = new LinkedHashMap<String, Object>();
 
         private int columnCount;
         private int cellsPerColumn;
-      private int theNum;
+        private int theNum;
 
         private int[] predictedColumns;
         private int[] actual;
@@ -228,19 +227,19 @@ public class QuickTest {
               System.out.println("--------------------------------------------------------");
               System.out.println("Iteration: " + theNum);
             }
-          System.out.println("===== " + recordOut + "  - Sequence Num: " + sequenceNum + " =====");
+            System.out.println("===== " + recordOut + "  - Sequence Num: " + sequenceNum + " =====");
 
             int[] output = new int[columnCount];
 
             //Input through encoder
-          System.out.println("ScalarEncoder Input = " + value);
+            System.out.println("ScalarEncoder Input = " + value);
             int[] encoding = encoder.encode(value);
-          System.out.println("ScalarEncoder Output = " + Arrays.toString(encoding));
+            System.out.println("ScalarEncoder Output = " + Arrays.toString(encoding));
             int bucketIdx = encoder.getBucketIndices(value)[0];
 
             //Input through spatial pooler
             spatialPooler.compute(memory, encoding, output, true, true);
-          System.out.println("SpatialPooler Output = " + Arrays.toString(output));
+            System.out.println("SpatialPooler Output = " + Arrays.toString(output));
 
             // Let the SpatialPooler train independently (warm up) first
             if(theNum < 200) return;
@@ -251,17 +250,17 @@ public class QuickTest {
             lastPredicted = predictedColumns;
             predictedColumns = getSDR(cc.predictiveCells()); //Get the predicted column indexes
             int[] activeCellIndexes = Connections.asCellIndexes(cc.activeCells()).stream().mapToInt(i -> i).sorted().toArray();  //Get the active cells for classifier input
-          System.out.println("TemporalMemory Input = " + Arrays.toString(input));
-          System.out.println("TemporalMemory Prediction = " + Arrays.toString(predictedColumns));
+            System.out.println("TemporalMemory Input = " + Arrays.toString(input));
+            System.out.println("TemporalMemory Prediction = " + Arrays.toString(predictedColumns));
 
             classification.put("bucketIdx", bucketIdx);
             classification.put("actValue", value);
             
-          ClassifierResult<Double> result = classifier.compute(recordNum, classification, activeCellIndexes, true, true);
-          System.out.print("CLAClassifier prediction = " + stringValue(result.getMostProbableValue(1)));
-          System.out.println("  |  CLAClassifier 1 step prob = " + Arrays.toString(result.getStats(1)) + "\n");
+            ClassifierResult<Double> result = classifier.compute(recordNum, classification, activeCellIndexes, true, true);
+            System.out.print("CLAClassifier prediction = " + stringValue(result.getMostProbableValue(1)));
+            System.out.println("  |  CLAClassifier 1 step prob = " + Arrays.toString(result.getStats(1)) + "\n");
 
-          System.out.println("");
+            System.out.println("");
         }
 
         public int[] inflateSDR(int[] SDR, int len) {
