@@ -22,7 +22,7 @@ of these two advanced Machine Intelligence technologies.
 
 #### Demo Usage
 ```
-java -jar FoxEatsDemo.jar -K<Cortical.io API Key>
+java -jar fox-eats-demo-v0.6.4-alpha.jar -K<Cortical.io API Key>
 ```
 
 The execution of this demo requires the use of a **Free** API Key from [Cortical.io](http://www.cortical.io/resources_apikey.html). Just follow the link. It's real easy and the whole process takes just a few minutes (5 secs. on your part, and 2mins. 55secs. on Cortical.io's part) - and an internet connection. Once the demo has been run once, the fingerprints for the terms in the demo are cached locally - however the demo still requires an internet connection.
