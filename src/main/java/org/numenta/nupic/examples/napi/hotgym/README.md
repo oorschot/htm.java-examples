@@ -8,7 +8,7 @@ This demo shows the Network API running in **3 modes** to demonstrate the flexib
 
 ### _Extremely Easy to Run_
 Just type ( from demo dir: htm.java/src/main/java/org/numenta/nupic/examples/napi/hotgym ):
->&gt; java -jar NAPI-Hotgym-Demo-1.0.jar 
+>&gt; java -jar NAPI-Hotgym-Demo-v0.6.4-alpha.jar 
 
 ![](http://metaware.us/napi-hotgym-demo.gif)
 
