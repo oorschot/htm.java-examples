@@ -1,11 +1,13 @@
 package org.numenta.nupic.examples.cortical_io.pafoxeats;
 
+import org.numenta.nupic.network.Network;
+
 import io.cortical.fx.webstyle.CorticalLogoBackground;
 import io.cortical.fx.webstyle.LabelledRadiusPane;
 import io.cortical.fx.webstyle.SegmentedButtonBar;
 import io.cortical.fx.webstyle.example.LogoTitlePane;
-import io.cortical.rest.model.Term;
-import io.cortical.services.api.client.ApiException;
+import io.cortical.retina.model.Term;
+import io.cortical.retina.rest.ApiException;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -20,8 +22,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-
-import org.numenta.nupic.network.Network;
 
 
 

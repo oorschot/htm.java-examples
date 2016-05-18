@@ -49,12 +49,12 @@
 		<dependency>
 			<groupId>org.numenta</groupId>
 			<artifactId>htm.java</artifactId>
-			<version>0.6.5-SNAPSHOT</version>
+			<version>0.6.8</version>
 		</dependency>
 		<dependency>
 			<groupId>cortical</groupId>
 			<artifactId>cortical-fxwidgets</artifactId>
-			<version>0.9</version>
+			<version>0.9.1</version>
 		</dependency>
 		<dependency>
 			<groupId>cortical</groupId>
@@ -140,8 +140,8 @@
 		</dependency>
 		<dependency>
 			<groupId>io.cortical</groupId>
-			<artifactId>retina-service-java-api-client</artifactId>
-			<version>2.2.1</version>
+			<artifactId>retina-api-java-sdk</artifactId>
+			<version>1.0.1</version>
 			<scope />
 		</dependency>
 	</dependencies>

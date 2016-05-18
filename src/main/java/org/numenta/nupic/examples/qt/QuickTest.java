@@ -21,8 +21,6 @@
  */
 package org.numenta.nupic.examples.qt;
 
-import gnu.trove.list.array.TIntArrayList;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
@@ -36,7 +34,7 @@ import org.numenta.nupic.Connections;
 import org.numenta.nupic.Parameters;
 import org.numenta.nupic.Parameters.KEY;
 import org.numenta.nupic.algorithms.CLAClassifier;
-import org.numenta.nupic.algorithms.ClassifierResult;
+import org.numenta.nupic.algorithms.Classification;
 import org.numenta.nupic.algorithms.SpatialPooler;
 import org.numenta.nupic.algorithms.TemporalMemory;
 //import org.numenta.nupic.algorithms.ClassifierResult;
@@ -44,6 +42,8 @@ import org.numenta.nupic.encoders.ScalarEncoder;
 import org.numenta.nupic.model.Cell;
 import org.numenta.nupic.util.ArrayUtils;
 import org.numenta.nupic.util.FastRandom;
+
+import gnu.trove.list.array.TIntArrayList;
 /**
  * Quick and dirty example of tying together a network of components.
  * This should hold off peeps until the Network API is complete.
@@ -256,7 +256,7 @@ public class QuickTest {
             classification.put("bucketIdx", bucketIdx);
             classification.put("actValue", value);
             
-            ClassifierResult<Double> result = classifier.compute(recordNum, classification, activeCellIndexes, true, true);
+            Classification<Double> result = classifier.compute(recordNum, classification, activeCellIndexes, true, true);
             System.out.print("CLAClassifier prediction = " + stringValue(result.getMostProbableValue(1)));
             System.out.println("  |  CLAClassifier 1 step prob = " + Arrays.toString(result.getStats(1)) + "\n");
 

@@ -1,13 +1,5 @@
 package org.numenta.nupic.examples.cortical_io.breakingnews;
 
-import io.cortical.fx.webstyle.example.FingerprintPane;
-import io.cortical.fx.webstyle.example.TriplePanel;
-import io.cortical.rest.model.Metric;
-import io.cortical.services.RetinaApis;
-import io.cortical.twitter.Algorithm;
-import io.cortical.twitter.Tweet;
-import io.cortical.twitter.TweetUtilities;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +13,20 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.numenta.nupic.Parameters.KEY;
+import org.numenta.nupic.algorithms.TemporalMemory;
+import org.numenta.nupic.examples.cortical_io.breakingnews.BreakingNewsDemoView.Mode;
+import org.numenta.nupic.network.Network;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.cortical.fx.webstyle.example.FingerprintPane;
+import io.cortical.fx.webstyle.example.TriplePanel;
+import io.cortical.retina.client.FullClient;
+import io.cortical.retina.model.Metric;
+import io.cortical.twitter.Algorithm;
+import io.cortical.twitter.Tweet;
+import io.cortical.twitter.TweetUtilities;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.BoundingBox;
@@ -35,13 +41,6 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import org.numenta.nupic.Parameters.KEY;
-import org.numenta.nupic.examples.cortical_io.breakingnews.BreakingNewsDemoView.Mode;
-import org.numenta.nupic.network.Network;
-import org.numenta.nupic.algorithms.TemporalMemory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 
 /**
@@ -51,9 +50,6 @@ import org.slf4j.LoggerFactory;
  */
 public class BreakingNewsDemo extends Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(BreakingNewsDemo.class);
-
-    private static final String RETINA_NAME = "en_associative";
-    private static final String RETINA_IP = "api.cortical.io";
 
     private String apiKey;
 
@@ -272,6 +268,9 @@ public class BreakingNewsDemo extends Application {
     }
 
     private void popuplateFingerPrintDisplay(Tweet tweet, int[] prediction) {
+        if(tweet == null || tweet.getFingerprints() == null || tweet.getFingerprints().size() < 1) {
+            return;
+        }
         TriplePanel panel = view.fingerprintPanelProperty().get();
         ((FingerprintPane)panel.getLeftPane()).setSDR(tweet.getFingerprints().get(0).getPositions());
         if(prediction != null && prediction.length > 0) {
@@ -316,9 +315,9 @@ public class BreakingNewsDemo extends Application {
                 .add(Network.createLayer("Layer 2/3", p)
                     .add(new TemporalMemory())));
 
-        RetinaApis ra = new RetinaApis(RETINA_NAME, RETINA_IP, apiKey);
+        FullClient client = new FullClient(apiKey);
 
-        algo = new StrictHackathonAlgorithm(ra, network);
+        algo = new StrictHackathonAlgorithm(client, network);
 
         return algo;
     }

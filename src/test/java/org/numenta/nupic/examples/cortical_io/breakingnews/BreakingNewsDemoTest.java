@@ -3,9 +3,6 @@ package org.numenta.nupic.examples.cortical_io.breakingnews;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import io.cortical.rest.model.Metric;
-import io.cortical.twitter.Algorithm;
-import io.cortical.twitter.Tweet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +14,10 @@ import org.junit.Test;
 import org.numenta.nupic.Parameters;
 import org.numenta.nupic.Parameters.KEY;
 import org.numenta.nupic.network.Network;
+
+import io.cortical.retina.model.Metric;
+import io.cortical.twitter.Algorithm;
+import io.cortical.twitter.Tweet;
 
 
 public class BreakingNewsDemoTest {

@@ -25,6 +25,14 @@ public interface ResourceLocator {
         if(url == null) {
             url = ResourceLocator.class.getClassLoader().getResource(s);
         }
+        if(url.getPath().indexOf("!/") != -1) {
+            System.out.println("fucking problem: " + url.getPath());
+            String adjust = url.getPath().replace("!/", "!");
+            System.out.println("adjust: " + adjust);
+            try { url = new URL(adjust); }catch(Exception e) { e.printStackTrace(); }
+            System.out.println("adjust url: " + url);
+            System.out.println("adjust retVal: " + new File(url.getPath()).getPath());
+        }
         return new File(url.getPath()).getPath();
     }
     

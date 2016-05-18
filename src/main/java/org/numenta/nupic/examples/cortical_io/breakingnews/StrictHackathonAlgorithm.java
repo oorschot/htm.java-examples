@@ -1,13 +1,5 @@
 package org.numenta.nupic.examples.cortical_io.breakingnews;
 
-import gnu.trove.list.array.TIntArrayList;
-import io.cortical.rest.model.Fingerprint;
-import io.cortical.rest.model.Metric;
-import io.cortical.services.RetinaApis;
-import io.cortical.services.api.client.ApiException;
-import io.cortical.twitter.Algorithm;
-import io.cortical.twitter.Tweet;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,9 +14,16 @@ import org.numenta.nupic.util.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import rx.Subscriber;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
+
+import gnu.trove.list.array.TIntArrayList;
+import io.cortical.retina.client.FullClient;
+import io.cortical.retina.model.Fingerprint;
+import io.cortical.retina.model.Metric;
+import io.cortical.retina.rest.ApiException;
+import io.cortical.twitter.Algorithm;
+import io.cortical.twitter.Tweet;
+import rx.Subscriber;
 
 /**
  * An implementation of {@link Algorithm} that closely follows the original
@@ -40,7 +39,7 @@ public class StrictHackathonAlgorithm implements Algorithm {
     private static final int SDR_WIDTH = 16384;
     private static final double SPARSITY = 0.02;
     
-    private RetinaApis retinaApis;
+    private FullClient client;
     private Network htmNetwork;
     
     private Metric similarities;
@@ -69,11 +68,11 @@ public class StrictHackathonAlgorithm implements Algorithm {
     /**
      * Constructs a new {@code StrictHackathonAlgorithm}
      * 
-     * @param retinaApis
+     * @param client
      * @param htmNetwork
      */
-    public StrictHackathonAlgorithm(RetinaApis retinaApis, Network htmNetwork) {
-        this.retinaApis = retinaApis;
+    public StrictHackathonAlgorithm(FullClient client, Network htmNetwork) {
+        this.client = client;
         this.htmNetwork = htmNetwork;
         
         processedTweets = new ArrayList<>();
@@ -135,12 +134,11 @@ public class StrictHackathonAlgorithm implements Algorithm {
         List<Fingerprint> tweetFp = Collections.emptyList();
         
         try {
-            tweetFp = retinaApis.textApi().getFingerprints(tweet.getText());
+            tweetFp = Arrays.asList(client.getFingerprintForText(tweet.getText()));
             tweet.setFingerprints(tweetFp);
             processedTweets.add(tweet);
         } catch(ApiException e) {
             System.out.println("failed tweet: " + tweet.getText() + "\nfailed json: " + tweet.getJson());
-            e.printStackTrace();
             return;
         }
         
@@ -226,7 +224,7 @@ public class StrictHackathonAlgorithm implements Algorithm {
         String jsonTP = "{ \"positions\" : " + Arrays.toString(tweetPositions) + " }";
         String jsonHTM = "{ \"positions\" : " + Arrays.toString(htmPrediction) + " }";
         try {
-            return retinaApis.compareApi().compare(jsonTP, jsonHTM);
+            return client.compare(new Fingerprint(tweetPositions), new Fingerprint(htmPrediction));
         }catch(ApiException e) {
             LOGGER.error("Could not retreive comparison for last tweet and prediction.");
         } catch(JsonProcessingException e) {
