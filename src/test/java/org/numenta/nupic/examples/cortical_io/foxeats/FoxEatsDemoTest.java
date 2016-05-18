@@ -5,9 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import io.cortical.rest.model.Fingerprint;
-import io.cortical.rest.model.Term;
-import io.cortical.services.api.client.ApiException;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -32,10 +29,13 @@ import org.numenta.nupic.network.Region;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import rx.Subscriber;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.cortical.retina.model.Fingerprint;
+import io.cortical.retina.model.Term;
+import io.cortical.retina.rest.ApiException;
+import rx.Subscriber;
 
 
 public class FoxEatsDemoTest {

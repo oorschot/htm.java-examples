@@ -1,13 +1,5 @@
 package org.numenta.nupic.examples.cortical_io.pafoxeats;
 
-import gnu.trove.list.array.TIntArrayList;
-import io.cortical.rest.model.Fingerprint;
-import io.cortical.rest.model.Term;
-import io.cortical.services.Expressions;
-import io.cortical.services.RetinaApis;
-import io.cortical.services.Terms;
-import io.cortical.services.api.client.ApiException;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -24,17 +16,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import org.numenta.nupic.Parameters.KEY;
 import org.numenta.nupic.SDR;
@@ -53,6 +34,22 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gnu.trove.list.array.TIntArrayList;
+import io.cortical.retina.client.FullClient;
+import io.cortical.retina.model.Fingerprint;
+import io.cortical.retina.model.Term;
+import io.cortical.retina.rest.ApiException;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
+import javafx.scene.paint.Color;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.util.Callback;
 
 /**
  * This the HTM.java version of Subutai Ahmad's Hackathon Demo illustrating the
@@ -78,8 +75,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PAFoxEatsDemo extends Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(PAFoxEatsDemo.class);
 
-    private static final String RETINA_NAME = "en_associative";
-    private static final String RETINA_IP = "api.cortical.io";
+    private FullClient client;
 
     private static final double SDR_WIDTH = 16384D;
     private static final double SPARSITY = 0.02D;
@@ -100,9 +96,6 @@ public class PAFoxEatsDemo extends Application {
 
     private List<String[]> input;
     private Map<String, Term> cache;
-
-    private Terms termsApi;
-    private Expressions exprApi;
 
     private Network network;
 
@@ -325,10 +318,8 @@ public class PAFoxEatsDemo extends Application {
     boolean connectionValid(String apiKey) {
         try {
             this.apiKey = apiKey;
-            RetinaApis ra = new RetinaApis(RETINA_NAME, RETINA_IP, this.apiKey);
-            termsApi = ra.termsApi();
-            exprApi = ra.expressionsApi();
-
+            client = new FullClient(this.apiKey);
+            
             LOGGER.debug("Successfully initialized retinal api");
 
             return true;
@@ -349,7 +340,7 @@ public class PAFoxEatsDemo extends Application {
      * @throws JsonProcessingException
      */
     List<Term>  getTerms(String term, boolean includeFingerprint) throws ApiException, JsonProcessingException {
-        return termsApi.getTerm(term, includeFingerprint);
+        return client.getTerms(term, 0, 10, includeFingerprint);
     }
 
     /**
@@ -361,8 +352,7 @@ public class PAFoxEatsDemo extends Application {
      * @throws JsonProcessingException
      */
     List<Term> getSimilarTerms(Fingerprint fp) throws ApiException, JsonProcessingException {
-        System.out.println(fp.toJson());
-        return exprApi.getSimilarTerms(fp);
+        return client.getSimilarTermsForExpression(fp);
     }
 
     String sdrToString(int[] sdr) {
@@ -504,8 +494,7 @@ public class PAFoxEatsDemo extends Application {
     List<String[]> readInputData(String pathToFile) {
         Stream<String> stream = getInputDataStream(pathToFile);
 
-        List<String[]> list = stream.map(l -> { return (String[])l.split("[\\s]*\\,[\\s]*"); })
-                .collect(Collectors.toList());
+        List<String[]> list = stream.map(l -> { return (String[])l.split("[\\s]*\\,[\\s]*"); }).collect(Collectors.toList());
 
         return list;
     }
