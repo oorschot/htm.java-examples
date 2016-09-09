@@ -59,7 +59,7 @@ public class BreakingNewsDemoTest {
         BreakingNewsDemo demo = new BreakingNewsDemo();
         Parameters p = demo.getHTMParameters();
         assertNotNull(p);
-        assertTrue(Arrays.equals(new int[] { 16384 }, (int[])p.getParameterByKey(KEY.COLUMN_DIMENSIONS)));
+        assertTrue(Arrays.equals(new int[] { 16384 }, (int[])p.get(KEY.COLUMN_DIMENSIONS)));
     }
     
     @Test

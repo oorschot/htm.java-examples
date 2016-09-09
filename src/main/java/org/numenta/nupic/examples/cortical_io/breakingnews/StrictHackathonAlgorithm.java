@@ -10,13 +10,13 @@ import java.util.concurrent.Semaphore;
 import org.numenta.nupic.SDR;
 import org.numenta.nupic.network.Inference;
 import org.numenta.nupic.network.Network;
-import org.numenta.nupic.util.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.set.hash.TIntHashSet;
 import io.cortical.retina.client.FullClient;
 import io.cortical.retina.model.Fingerprint;
 import io.cortical.retina.model.Metric;
@@ -197,9 +197,33 @@ public class StrictHackathonAlgorithm implements Algorithm {
     int[] subsample(int[] input) {
         double sparsity = getSparsity(input);
         if(sparsity > 0.02) {
-           input = ArrayUtils.sample((int)(SDR_WIDTH * SPARSITY) + 1, new TIntArrayList(input), rng); 
+           input = sample((int)(SDR_WIDTH * SPARSITY) + 1, new TIntArrayList(input), rng); 
         }
         return input;
+    }
+    
+    /**
+     * Returns a random, sorted, and  unique array of the specified sample size of
+     * selections from the specified list of choices.
+     *
+     * @param sampleSize the number of selections in the returned sample
+     * @param choices    the list of choices to select from
+     * @param random     a random number generator
+     * @return a sample of numbers of the specified size
+     */
+    int[] sample(int sampleSize, TIntArrayList choices, Random random) {
+        TIntHashSet temp = new TIntHashSet();
+        int upperBound = choices.size();
+        for (int i = 0; i < sampleSize; i++) {
+            int randomIdx = random.nextInt(upperBound);
+            while (temp.contains(choices.get(randomIdx))) {
+                randomIdx = random.nextInt(upperBound);
+            }
+            temp.add(choices.get(randomIdx));
+        }
+        TIntArrayList al = new TIntArrayList(temp);
+        al.sort();
+        return al.toArray();
     }
     
     void inspectTweetHistory(Tweet tweet, List<Tweet> pastTweets) {

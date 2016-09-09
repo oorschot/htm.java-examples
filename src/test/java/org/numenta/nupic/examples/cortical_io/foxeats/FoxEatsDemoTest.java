@@ -555,34 +555,34 @@ public class FoxEatsDemoTest {
         setup();
         
         Parameters p = mockDemo.createParameters();
-        assertEquals(13, p.keys().size());
+        assertEquals(14, p.keys().size());
         
-        int[] dims = (int[])p.getParameterByKey(KEY.COLUMN_DIMENSIONS);
+        int[] dims = (int[])p.get(KEY.COLUMN_DIMENSIONS);
         assertEquals(1, dims.length);
         assertEquals(16384, dims[0]);
         
-        int cellsPerCol = (int)p.getParameterByKey(KEY.CELLS_PER_COLUMN);
+        int cellsPerCol = (int)p.get(KEY.CELLS_PER_COLUMN);
         assertEquals(8, cellsPerCol);
         
-        double conPerm = (double)p.getParameterByKey(KEY.CONNECTED_PERMANENCE);
+        double conPerm = (double)p.get(KEY.CONNECTED_PERMANENCE);
         assertEquals(0.5, conPerm, 0);
         
-        double initPerm = (double)p.getParameterByKey(KEY.INITIAL_PERMANENCE);
+        double initPerm = (double)p.get(KEY.INITIAL_PERMANENCE);
         assertEquals(0.4, initPerm, 0);
         
-        int minT = (int)p.getParameterByKey(KEY.MIN_THRESHOLD);
+        int minT = (int)p.get(KEY.MIN_THRESHOLD);
         assertEquals(164, minT);
         
-        int maxSyns = (int)p.getParameterByKey(KEY.MAX_NEW_SYNAPSE_COUNT);
+        int maxSyns = (int)p.get(KEY.MAX_NEW_SYNAPSE_COUNT);
         assertEquals(164, maxSyns);
         
-        double permInc = (double)p.getParameterByKey(KEY.PERMANENCE_INCREMENT);
+        double permInc = (double)p.get(KEY.PERMANENCE_INCREMENT);
         assertEquals(0.1, permInc, 0);
         
-        double permDec = (double)p.getParameterByKey(KEY.PERMANENCE_DECREMENT);
+        double permDec = (double)p.get(KEY.PERMANENCE_DECREMENT);
         assertEquals(0, permDec, 0);
         
-        int actT = (int)p.getParameterByKey(KEY.ACTIVATION_THRESHOLD);
+        int actT = (int)p.get(KEY.ACTIVATION_THRESHOLD);
         assertEquals(164, actT);
     }
     
