@@ -4,7 +4,7 @@
 
 	<groupId>org.numenta</groupId>
 	<artifactId>htm.java-examples</artifactId>
-	<version>0.6.5-SNAPSHOT</version>
+	<version>0.6.9-SNAPSHOT</version>
 	<name>htm.java-examples</name>
 	<description>Example Applications for the Java version of Numenta's HTM technology</description>
 
@@ -49,7 +49,7 @@
 		<dependency>
 			<groupId>org.numenta</groupId>
 			<artifactId>htm.java</artifactId>
-			<version>0.6.8</version>
+			<version>0.6.12</version>
 		</dependency>
 		<dependency>
 			<groupId>cortical</groupId>
@@ -141,7 +141,7 @@
 		<dependency>
 			<groupId>io.cortical</groupId>
 			<artifactId>retina-api-java-sdk</artifactId>
-			<version>1.0.1</version>
+			<version>1.0.2</version>
 			<scope />
 		</dependency>
 	</dependencies>

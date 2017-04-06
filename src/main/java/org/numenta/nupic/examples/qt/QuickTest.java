@@ -29,8 +29,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.numenta.nupic.ComputeCycle;
-import org.numenta.nupic.Connections;
 import org.numenta.nupic.Parameters;
 import org.numenta.nupic.Parameters.KEY;
 import org.numenta.nupic.algorithms.CLAClassifier;
@@ -40,6 +38,8 @@ import org.numenta.nupic.algorithms.TemporalMemory;
 //import org.numenta.nupic.algorithms.ClassifierResult;
 import org.numenta.nupic.encoders.ScalarEncoder;
 import org.numenta.nupic.model.Cell;
+import org.numenta.nupic.model.ComputeCycle;
+import org.numenta.nupic.model.Connections;
 import org.numenta.nupic.util.ArrayUtils;
 import org.numenta.nupic.util.FastRandom;
 
@@ -108,38 +108,37 @@ public class QuickTest {
 
     public static Parameters getParameters() {
         Parameters parameters = Parameters.getAllDefaultParameters();
-        parameters.setParameterByKey(KEY.INPUT_DIMENSIONS, new int[] { 8 });
-        parameters.setParameterByKey(KEY.COLUMN_DIMENSIONS, new int[] { 20 });
-        parameters.setParameterByKey(KEY.CELLS_PER_COLUMN, 6);
+        parameters.set(KEY.INPUT_DIMENSIONS, new int[] { 8 });
+        parameters.set(KEY.COLUMN_DIMENSIONS, new int[] { 20 });
+        parameters.set(KEY.CELLS_PER_COLUMN, 6);
 
         //SpatialPooler specific
-        parameters.setParameterByKey(KEY.POTENTIAL_RADIUS, 12);//3
-        parameters.setParameterByKey(KEY.POTENTIAL_PCT, 0.5);//0.5
-        parameters.setParameterByKey(KEY.GLOBAL_INHIBITION, false);
-        parameters.setParameterByKey(KEY.LOCAL_AREA_DENSITY, -1.0);
-        parameters.setParameterByKey(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 5.0);
-        parameters.setParameterByKey(KEY.STIMULUS_THRESHOLD, 1.0);
-        parameters.setParameterByKey(KEY.SYN_PERM_INACTIVE_DEC, 0.0005);
-        parameters.setParameterByKey(KEY.SYN_PERM_ACTIVE_INC, 0.0015);
-        parameters.setParameterByKey(KEY.SYN_PERM_TRIM_THRESHOLD, 0.05);
-        parameters.setParameterByKey(KEY.SYN_PERM_CONNECTED, 0.1);
-        parameters.setParameterByKey(KEY.MIN_PCT_OVERLAP_DUTY_CYCLE, 0.1);
-        parameters.setParameterByKey(KEY.MIN_PCT_ACTIVE_DUTY_CYCLE, 0.1);
-        parameters.setParameterByKey(KEY.DUTY_CYCLE_PERIOD, 10);
-        parameters.setParameterByKey(KEY.MAX_BOOST, 10.0);
-        parameters.setParameterByKey(KEY.SEED, 42);
-        parameters.setParameterByKey(KEY.SP_VERBOSITY, 0);
-
-        //Temporal Memory specific
-        parameters.setParameterByKey(KEY.INITIAL_PERMANENCE, 0.2);
-        parameters.setParameterByKey(KEY.CONNECTED_PERMANENCE, 0.8);
-        parameters.setParameterByKey(KEY.MIN_THRESHOLD, 5);
-        parameters.setParameterByKey(KEY.MAX_NEW_SYNAPSE_COUNT, 6);
-        parameters.setParameterByKey(KEY.PERMANENCE_INCREMENT, 0.1);//0.05
-        parameters.setParameterByKey(KEY.PERMANENCE_DECREMENT, 0.1);//0.05
-        parameters.setParameterByKey(KEY.ACTIVATION_THRESHOLD, 4);
+        parameters.set(KEY.POTENTIAL_RADIUS, 12);//3
+        parameters.set(KEY.POTENTIAL_PCT, 0.5);//0.5
+        parameters.set(KEY.GLOBAL_INHIBITION, false);
+        parameters.set(KEY.LOCAL_AREA_DENSITY, -1.0);
+        parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 5.0);
+        parameters.set(KEY.STIMULUS_THRESHOLD, 1.0);
+        parameters.set(KEY.SYN_PERM_INACTIVE_DEC, 0.0005);
+        parameters.set(KEY.SYN_PERM_ACTIVE_INC, 0.0015);
+        parameters.set(KEY.SYN_PERM_TRIM_THRESHOLD, 0.05);
+        parameters.set(KEY.SYN_PERM_CONNECTED, 0.1);
+        parameters.set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.1);
+        parameters.set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.1);
+        parameters.set(KEY.DUTY_CYCLE_PERIOD, 10);
+        parameters.set(KEY.MAX_BOOST, 10.0);
+        parameters.set(KEY.SEED, 42);
         
-        parameters.setParameterByKey(KEY.RANDOM, new FastRandom());
+        //Temporal Memory specific
+        parameters.set(KEY.INITIAL_PERMANENCE, 0.2);
+        parameters.set(KEY.CONNECTED_PERMANENCE, 0.8);
+        parameters.set(KEY.MIN_THRESHOLD, 5);
+        parameters.set(KEY.MAX_NEW_SYNAPSE_COUNT, 6);
+        parameters.set(KEY.PERMANENCE_INCREMENT, 0.1);//0.05
+        parameters.set(KEY.PERMANENCE_DECREMENT, 0.1);//0.05
+        parameters.set(KEY.ACTIVATION_THRESHOLD, 4);
+        
+        parameters.set(KEY.RANDOM, new FastRandom());
 
         return parameters;
     }
@@ -197,7 +196,7 @@ public class QuickTest {
 
             params.apply(memory);
             spatialPooler.init(memory);
-            temporalMemory.init(memory);
+            TemporalMemory.init(memory);
 
             columnCount = memory.getPotentialPools().getMaxIndex() + 1; //If necessary, flatten multi-dimensional index
             cellsPerColumn = memory.getCellsPerColumn();
@@ -238,7 +237,7 @@ public class QuickTest {
             int bucketIdx = encoder.getBucketIndices(value)[0];
 
             //Input through spatial pooler
-            spatialPooler.compute(memory, encoding, output, true, true);
+            spatialPooler.compute(memory, encoding, output, true);
             System.out.println("SpatialPooler Output = " + Arrays.toString(output));
 
             // Let the SpatialPooler train independently (warm up) first

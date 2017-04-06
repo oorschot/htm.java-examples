@@ -105,27 +105,27 @@ public class BreakingNewsDemo extends Application {
      */
     public org.numenta.nupic.Parameters getHTMParameters() {
         org.numenta.nupic.Parameters p = org.numenta.nupic.Parameters.getAllDefaultParameters();
-        p.setParameterByKey(KEY.GLOBAL_INHIBITION, true);
-        p.setParameterByKey(KEY.COLUMN_DIMENSIONS, new int[] { 16384 });
-        p.setParameterByKey(KEY.INPUT_DIMENSIONS, new int[]{ 16384 });
-        p.setParameterByKey(KEY.CELLS_PER_COLUMN, 32);
-        p.setParameterByKey(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 40.0);
-        p.setParameterByKey(KEY.POTENTIAL_PCT, 0.8);
-        p.setParameterByKey(KEY.SYN_PERM_CONNECTED,0.1);
-        p.setParameterByKey(KEY.SYN_PERM_ACTIVE_INC, 0.0001);
-        p.setParameterByKey(KEY.SYN_PERM_INACTIVE_DEC, 0.0005);
-        p.setParameterByKey(KEY.MAX_BOOST, 1.0);
+        p.set(KEY.GLOBAL_INHIBITION, true);
+        p.set(KEY.COLUMN_DIMENSIONS, new int[] { 16384 });
+        p.set(KEY.INPUT_DIMENSIONS, new int[]{ 16384 });
+        p.set(KEY.CELLS_PER_COLUMN, 32);
+        p.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 40.0);
+        p.set(KEY.POTENTIAL_PCT, 0.8);
+        p.set(KEY.SYN_PERM_CONNECTED,0.1);
+        p.set(KEY.SYN_PERM_ACTIVE_INC, 0.0001);
+        p.set(KEY.SYN_PERM_INACTIVE_DEC, 0.0005);
+        p.set(KEY.MAX_BOOST, 1.0);
 
-        p.setParameterByKey(KEY.LEARNING_RADIUS, 2048);
-        p.setParameterByKey(KEY.CONNECTED_PERMANENCE, 0.5);
-        p.setParameterByKey(KEY.MAX_NEW_SYNAPSE_COUNT, 20);
-        p.setParameterByKey(KEY.INITIAL_PERMANENCE, 0.21);
-        p.setParameterByKey(KEY.PERMANENCE_INCREMENT, 0.1);
-        p.setParameterByKey(KEY.PERMANENCE_DECREMENT, 0.1);
-        p.setParameterByKey(KEY.MIN_THRESHOLD, 9);
-        p.setParameterByKey(KEY.ACTIVATION_THRESHOLD, 12);
+        p.set(KEY.LEARNING_RADIUS, 2048);
+        p.set(KEY.CONNECTED_PERMANENCE, 0.5);
+        p.set(KEY.MAX_NEW_SYNAPSE_COUNT, 20);
+        p.set(KEY.INITIAL_PERMANENCE, 0.21);
+        p.set(KEY.PERMANENCE_INCREMENT, 0.1);
+        p.set(KEY.PERMANENCE_DECREMENT, 0.1);
+        p.set(KEY.MIN_THRESHOLD, 9);
+        p.set(KEY.ACTIVATION_THRESHOLD, 12);
 
-        p.setParameterByKey(KEY.CLIP_INPUT, false);
+        p.set(KEY.CLIP_INPUT, false);
 
         return p;
     }

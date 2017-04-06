@@ -48,11 +48,11 @@ public class QuickTestTest {
     @Test
     public void testGetParameters() {
         Parameters params = QuickTest.getParameters();
-        assertTrue(((int[])params.getParameterByKey(KEY.INPUT_DIMENSIONS))[0] == 8);
-        assertTrue(((int[])params.getParameterByKey(KEY.COLUMN_DIMENSIONS))[0] == 20);
-        assertTrue(((int)params.getParameterByKey(KEY.CELLS_PER_COLUMN)) == 6);
-        assertEquals(((double)params.getParameterByKey(KEY.PERMANENCE_INCREMENT)),
-            ((double)params.getParameterByKey(KEY.PERMANENCE_DECREMENT)), 0.0);
+        assertTrue(((int[])params.get(KEY.INPUT_DIMENSIONS))[0] == 8);
+        assertTrue(((int[])params.get(KEY.COLUMN_DIMENSIONS))[0] == 20);
+        assertTrue(((int)params.get(KEY.CELLS_PER_COLUMN)) == 6);
+        assertEquals(((double)params.get(KEY.PERMANENCE_INCREMENT)),
+            ((double)params.get(KEY.PERMANENCE_DECREMENT)), 0.0);
     }
 
     @Test

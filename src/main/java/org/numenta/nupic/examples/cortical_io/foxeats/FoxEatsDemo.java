@@ -21,14 +21,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.numenta.nupic.Parameters.KEY;
-import org.numenta.nupic.SDR;
 import org.numenta.nupic.algorithms.TemporalMemory;
 import org.numenta.nupic.datagen.ResourceLocator;
 import org.numenta.nupic.model.Cell;
+import org.numenta.nupic.model.SDR;
 import org.numenta.nupic.network.Layer;
 import org.numenta.nupic.network.Network;
 import org.numenta.nupic.network.sensor.FileSensor;
-import org.numenta.nupic.util.ArrayUtils;
 import org.numenta.nupic.util.MersenneTwister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +36,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.set.hash.TIntHashSet;
 import io.cortical.retina.client.FullClient;
 import io.cortical.retina.model.Fingerprint;
 import io.cortical.retina.model.Term;
@@ -415,9 +415,33 @@ public class FoxEatsDemo extends Application {
     int[] subsample(int[] input) {
         int sparsity = getSparsity(input);
         if(sparsity > 2) {
-           input = ArrayUtils.sample((int)(SDR_WIDTH * SPARSITY) + 1, new TIntArrayList(input), RANDOM);
+           input = sample((int)(SDR_WIDTH * SPARSITY) + 1, new TIntArrayList(input), RANDOM);
         }
         return input;
+    }
+    
+    /**
+     * Returns a random, sorted, and  unique array of the specified sample size of
+     * selections from the specified list of choices.
+     *
+     * @param sampleSize the number of selections in the returned sample
+     * @param choices    the list of choices to select from
+     * @param random     a random number generator
+     * @return a sample of numbers of the specified size
+     */
+    int[] sample(int sampleSize, TIntArrayList choices, Random random) {
+        TIntHashSet temp = new TIntHashSet();
+        int upperBound = choices.size();
+        for (int i = 0; i < sampleSize; i++) {
+            int randomIdx = random.nextInt(upperBound);
+            while (temp.contains(choices.get(randomIdx))) {
+                randomIdx = random.nextInt(upperBound);
+            }
+            temp.add(choices.get(randomIdx));
+        }
+        TIntArrayList al = new TIntArrayList(temp);
+        al.sort();
+        return al.toArray();
     }
 
     /**
@@ -565,15 +589,15 @@ public class FoxEatsDemo extends Application {
      */
     org.numenta.nupic.Parameters createParameters() {
         org.numenta.nupic.Parameters tmParams = org.numenta.nupic.Parameters.getTemporalDefaultParameters();
-        tmParams.setParameterByKey(KEY.COLUMN_DIMENSIONS, new int[] { 16384 });
-        tmParams.setParameterByKey(KEY.CELLS_PER_COLUMN, 8);
-        tmParams.setParameterByKey(KEY.CONNECTED_PERMANENCE, 0.5);
-        tmParams.setParameterByKey(KEY.INITIAL_PERMANENCE, 0.4);
-        tmParams.setParameterByKey(KEY.MIN_THRESHOLD, 164);
-        tmParams.setParameterByKey(KEY.MAX_NEW_SYNAPSE_COUNT, 164);
-        tmParams.setParameterByKey(KEY.PERMANENCE_INCREMENT, 0.1);
-        tmParams.setParameterByKey(KEY.PERMANENCE_DECREMENT, 0.0);
-        tmParams.setParameterByKey(KEY.ACTIVATION_THRESHOLD, 164);
+        tmParams.set(KEY.COLUMN_DIMENSIONS, new int[] { 16384 });
+        tmParams.set(KEY.CELLS_PER_COLUMN, 8);
+        tmParams.set(KEY.CONNECTED_PERMANENCE, 0.5);
+        tmParams.set(KEY.INITIAL_PERMANENCE, 0.4);
+        tmParams.set(KEY.MIN_THRESHOLD, 164);
+        tmParams.set(KEY.MAX_NEW_SYNAPSE_COUNT, 164);
+        tmParams.set(KEY.PERMANENCE_INCREMENT, 0.1);
+        tmParams.set(KEY.PERMANENCE_DECREMENT, 0.0);
+        tmParams.set(KEY.ACTIVATION_THRESHOLD, 164);
 
         return tmParams;
     }
@@ -706,7 +730,7 @@ public class FoxEatsDemo extends Application {
             int[] sdr = getFingerprintSDR(phrase[i]);
             network.compute(sdr);
         }
-
+        
         Layer<?> layer = network.lookup("Region 1").lookup("Layer 2/3");
         Set<Cell> predictiveCells = layer.getPredictiveCells();
         int[] prediction = SDR.cellsAsColumnIndices(predictiveCells, layer.getConnections().getCellsPerColumn());

@@ -25,10 +25,10 @@ package org.numenta.nupic.examples.sp;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.numenta.nupic.Connections;
 import org.numenta.nupic.Parameters;
 import org.numenta.nupic.Parameters.KEY;
 import org.numenta.nupic.algorithms.SpatialPooler;
+import org.numenta.nupic.model.Connections;
 import org.numenta.nupic.util.ArrayUtils;
 import org.numenta.nupic.util.Condition;
 
@@ -63,13 +63,13 @@ public class HelloSP {
         activeArray = new int[columnNumber];
 
         parameters = Parameters.getSpatialDefaultParameters();
-        parameters.setParameterByKey(KEY.INPUT_DIMENSIONS, inputDimensions);
-        parameters.setParameterByKey(KEY.COLUMN_DIMENSIONS, columnDimensions);
-        parameters.setParameterByKey(KEY.POTENTIAL_RADIUS, inputSize);
-        parameters.setParameterByKey(KEY.GLOBAL_INHIBITION, true);
-        parameters.setParameterByKey(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02*columnNumber);
-        parameters.setParameterByKey(KEY.SYN_PERM_ACTIVE_INC, 0.01);
-        parameters.setParameterByKey(KEY.SYN_PERM_TRIM_THRESHOLD, 0.005);
+        parameters.set(KEY.INPUT_DIMENSIONS, inputDimensions);
+        parameters.set(KEY.COLUMN_DIMENSIONS, columnDimensions);
+        parameters.set(KEY.POTENTIAL_RADIUS, inputSize);
+        parameters.set(KEY.GLOBAL_INHIBITION, true);
+        parameters.set(KEY.NUM_ACTIVE_COLUMNS_PER_INH_AREA, 0.02*columnNumber);
+        parameters.set(KEY.SYN_PERM_ACTIVE_INC, 0.01);
+        parameters.set(KEY.SYN_PERM_TRIM_THRESHOLD, 0.005);
 
         sp = new SpatialPooler();
         mem = new Connections();
@@ -104,7 +104,7 @@ public class HelloSP {
         for (int i = 0; i < 70; i++) System.out.print("-");
         System.out.println();
 
-        sp.compute(mem, inputArray, activeArray, true, true);
+        sp.compute(mem, inputArray, activeArray, true);
 
         int[] res = ArrayUtils.where(activeArray, new Condition.Adapter<Object>() {
             public boolean eval(int n) {
