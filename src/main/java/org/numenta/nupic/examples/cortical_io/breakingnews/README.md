@@ -1,6 +1,6 @@
 # <img src="http://numenta.org/87b23beb8a4b7dea7d88099bfb28d182.svg" alt="NuPIC Logo" width=100/> ![Cortical.io Logo](https://avatars0.githubusercontent.com/u/7721887?v=3&amp;s=200)
 # Breaking News
-####_This the [Java™](http://www.oracle.com/technetwork/java/javase/overview/java8-2100321.html) version of the Cortical.io team's 2015 Spring Hackathon demo._
+#### This the [Java™](http://www.oracle.com/technetwork/java/javase/overview/java8-2100321.html) version of the Cortical.io team's 2015 Spring Hackathon demo._
 
 This demo demonstrates the integration of the Java version of  [NuPIC](https://github.com/numenta/nupic) ([htm.java](https://github.com/numenta/htm.java)) and [Cortical.io's](http://www.cortical.io/technology.html) Natural Language Programming (NLP) - using htm.java's [Network API (NAPI)](http://numenta.org/blog/2015/06/08/htm-java-receives-new-network-api.html)
 
