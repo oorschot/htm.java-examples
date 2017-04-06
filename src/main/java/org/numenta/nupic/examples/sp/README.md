@@ -1,4 +1,4 @@
-https://github.com/numenta/htm.java-examples/blob/master/src/main/java/org/numenta/nupic/examples/cortical_io/foxeats/fox-eats-demo-v0.6.12-alpha.jar NuPIC
+# <img src="http://numenta.org/87b23beb8a4b7dea7d88099bfb28d182.svg" alt="NuPIC Logo" width=100/> NuPIC
 
 ## Basic Spatial Pooler Example
 
