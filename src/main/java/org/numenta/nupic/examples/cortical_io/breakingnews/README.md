@@ -18,7 +18,7 @@ This demo uses a previously collected file of data (Tweets) as input in order to
 
 #### Demo Usage
 ```
-java -jar breaking-news-demo-v0.6.4-alpha.jar -K<Cortical.io API Key>
+java -jar breaking-news-demo-v0.6.12-alpha.jar -K<Cortical.io API Key>
 
 (no space between the "-K" flag and the key -> -K###-####)
 ```
