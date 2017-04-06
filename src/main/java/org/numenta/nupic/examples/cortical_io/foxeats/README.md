@@ -1,4 +1,4 @@
-# ![Numenta Logo](http://numenta.org/images/numenta-icon128.png) ![Cortical.io Logo](https://avatars0.githubusercontent.com/u/7721887?v=3&amp;s=200)
+# <img src="http://numenta.org/87b23beb8a4b7dea7d88099bfb28d182.svg" alt="NuPIC Logo" width=100/> ![Cortical.io Logo](https://avatars0.githubusercontent.com/u/7721887?v=3&amp;s=200)
 # What Does A Fox Eat?
 
 This the [Java™](http://www.oracle.com/technetwork/java/javase/overview/java8-2100321.html) version of Subutai Ahmad's [2013 Fall Hackathon Demo](http://numenta.org/blog/2013/11/06/2013-fall-hackathon-outcome.html#fox) illustrating the 
