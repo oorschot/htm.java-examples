@@ -21,10 +21,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.numenta.nupic.Parameters.KEY;
-import org.numenta.nupic.SDR;
 import org.numenta.nupic.algorithms.TemporalMemory;
 import org.numenta.nupic.datagen.ResourceLocator;
 import org.numenta.nupic.model.Cell;
+import org.numenta.nupic.model.SDR;
 import org.numenta.nupic.network.Layer;
 import org.numenta.nupic.network.Network;
 import org.numenta.nupic.network.sensor.FileSensor;

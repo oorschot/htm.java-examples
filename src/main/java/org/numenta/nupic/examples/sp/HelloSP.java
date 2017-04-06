@@ -25,10 +25,10 @@ package org.numenta.nupic.examples.sp;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.numenta.nupic.Connections;
 import org.numenta.nupic.Parameters;
 import org.numenta.nupic.Parameters.KEY;
 import org.numenta.nupic.algorithms.SpatialPooler;
+import org.numenta.nupic.model.Connections;
 import org.numenta.nupic.util.ArrayUtils;
 import org.numenta.nupic.util.Condition;
 
@@ -104,7 +104,7 @@ public class HelloSP {
         for (int i = 0; i < 70; i++) System.out.print("-");
         System.out.println();
 
-        sp.compute(mem, inputArray, activeArray, true, true);
+        sp.compute(mem, inputArray, activeArray, true);
 
         int[] res = ArrayUtils.where(activeArray, new Condition.Adapter<Object>() {
             public boolean eval(int n) {

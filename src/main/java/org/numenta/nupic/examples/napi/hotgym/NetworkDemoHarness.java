@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.numenta.nupic.Parameters;
 import org.numenta.nupic.Parameters.KEY;
+import org.numenta.nupic.algorithms.Classifier;
+import org.numenta.nupic.algorithms.SDRClassifier;
 import org.numenta.nupic.encoders.Encoder;
 import org.numenta.nupic.util.Tuple;
 
@@ -132,6 +134,7 @@ public class NetworkDemoHarness {
         p.set(KEY.SYN_PERM_ACTIVE_INC, 0.0001);
         p.set(KEY.SYN_PERM_INACTIVE_DEC, 0.0005);
         p.set(KEY.MAX_BOOST, 1.0);
+        p.set(KEY.INFERRED_FIELDS, getInferredFieldsMap("consumption", SDRClassifier.class));
         
         p.set(KEY.MAX_NEW_SYNAPSE_COUNT, 20);
         p.set(KEY.INITIAL_PERMANENCE, 0.21);
@@ -144,6 +147,18 @@ public class NetworkDemoHarness {
         p.set(KEY.FIELD_ENCODING_MAP, fieldEncodings);
 
         return p;
+    }
+    
+    /**
+     * @return a Map that can be used as the value for a Parameter
+     * object's KEY.INFERRED_FIELDS key, to classify the specified
+     * field with the specified Classifier type.
+     */
+    public static Map<String, Class<? extends Classifier>> getInferredFieldsMap(
+            String field, Class<? extends Classifier> classifier) {
+        Map<String, Class<? extends Classifier>> inferredFieldsMap = new HashMap<>();
+        inferredFieldsMap.put(field, classifier);
+        return inferredFieldsMap;
     }
 
     /**
@@ -207,12 +222,11 @@ public class NetworkDemoHarness {
         parameters.set(KEY.SYN_PERM_ACTIVE_INC, 0.1);
         parameters.set(KEY.SYN_PERM_TRIM_THRESHOLD, 0.05);
         parameters.set(KEY.SYN_PERM_CONNECTED, 0.1);
-        parameters.set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLE, 0.1);
-        parameters.set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLE, 0.1);
+        parameters.set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.1);
+        parameters.set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.1);
         parameters.set(KEY.DUTY_CYCLE_PERIOD, 10);
         parameters.set(KEY.MAX_BOOST, 10.0);
         parameters.set(KEY.SEED, 42);
-        parameters.set(KEY.SP_VERBOSITY, 0);
         
         //Temporal Memory specific
         parameters.set(KEY.INITIAL_PERMANENCE, 0.2);

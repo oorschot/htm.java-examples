@@ -29,8 +29,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.numenta.nupic.ComputeCycle;
-import org.numenta.nupic.Connections;
 import org.numenta.nupic.Parameters;
 import org.numenta.nupic.Parameters.KEY;
 import org.numenta.nupic.algorithms.CLAClassifier;
@@ -40,6 +38,8 @@ import org.numenta.nupic.algorithms.TemporalMemory;
 //import org.numenta.nupic.algorithms.ClassifierResult;
 import org.numenta.nupic.encoders.ScalarEncoder;
 import org.numenta.nupic.model.Cell;
+import org.numenta.nupic.model.ComputeCycle;
+import org.numenta.nupic.model.Connections;
 import org.numenta.nupic.util.ArrayUtils;
 import org.numenta.nupic.util.FastRandom;
 
@@ -123,13 +123,12 @@ public class QuickTest {
         parameters.set(KEY.SYN_PERM_ACTIVE_INC, 0.0015);
         parameters.set(KEY.SYN_PERM_TRIM_THRESHOLD, 0.05);
         parameters.set(KEY.SYN_PERM_CONNECTED, 0.1);
-        parameters.set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLE, 0.1);
-        parameters.set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLE, 0.1);
+        parameters.set(KEY.MIN_PCT_OVERLAP_DUTY_CYCLES, 0.1);
+        parameters.set(KEY.MIN_PCT_ACTIVE_DUTY_CYCLES, 0.1);
         parameters.set(KEY.DUTY_CYCLE_PERIOD, 10);
         parameters.set(KEY.MAX_BOOST, 10.0);
         parameters.set(KEY.SEED, 42);
-        parameters.set(KEY.SP_VERBOSITY, 0);
-
+        
         //Temporal Memory specific
         parameters.set(KEY.INITIAL_PERMANENCE, 0.2);
         parameters.set(KEY.CONNECTED_PERMANENCE, 0.8);
@@ -238,7 +237,7 @@ public class QuickTest {
             int bucketIdx = encoder.getBucketIndices(value)[0];
 
             //Input through spatial pooler
-            spatialPooler.compute(memory, encoding, output, true, true);
+            spatialPooler.compute(memory, encoding, output, true);
             System.out.println("SpatialPooler Output = " + Arrays.toString(output));
 
             // Let the SpatialPooler train independently (warm up) first

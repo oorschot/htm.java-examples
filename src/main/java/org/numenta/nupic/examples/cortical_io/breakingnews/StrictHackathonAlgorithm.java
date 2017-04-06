@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Semaphore;
 
-import org.numenta.nupic.SDR;
+import org.numenta.nupic.model.SDR;
 import org.numenta.nupic.network.Inference;
 import org.numenta.nupic.network.Network;
 import org.slf4j.Logger;
