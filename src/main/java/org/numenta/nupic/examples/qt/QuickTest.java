@@ -67,7 +67,7 @@ import gnu.trove.list.array.TIntArrayList;
 public class QuickTest {
     static boolean isResetting = true;
 
-    /* change JvO */
+    /* change JvO 2 */
     
     /**
      * @param args the command line arguments
